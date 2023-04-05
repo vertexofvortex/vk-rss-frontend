@@ -1,6 +1,8 @@
 import { AxiosResponse } from "axios";
 import { createBrowserRouter } from "react-router-dom";
-import { Source } from "./models";
+import { ISource } from "./models";
+import { IPost } from "./models/Post";
+import { getPosts } from "./network/posts";
 import { getSources } from "./network/sources";
 import { FeedsAll } from "./routes/feeds/feeds-all";
 import { FeedsGroups } from "./routes/feeds/feeds-groups";
@@ -17,17 +19,16 @@ const router = createBrowserRouter([
             {
                 path: "/sources",
                 element: <Sources />,
-                loader: async (): Promise<AxiosResponse<Source[]>> => {
+                loader: async (): Promise<AxiosResponse<ISource[]>> => {
                     return await getSources();
                 },
             },
             {
-                path: "/feeds",
-                element: <FeedsAll />,
-            },
-            {
                 path: "/feeds/all",
                 element: <FeedsAll />,
+                loader: async (): Promise<AxiosResponse<IPost[]>> => {
+                    return await getPosts();
+                },
             },
             {
                 path: "/feeds/groups",

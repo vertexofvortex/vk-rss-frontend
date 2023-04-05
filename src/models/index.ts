@@ -1,1 +1,1 @@
-export type { Source } from "./Source";
+export type { ISource } from "./Source";

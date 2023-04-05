@@ -4,10 +4,10 @@ import { AxiosResponse } from "axios";
 import { useEffect } from "react";
 import { useLoaderData } from "react-router-dom";
 import { SourceActions } from "../../components";
-import { Source } from "../../models";
+import { ISource } from "../../models";
 
 export function Sources() {
-    const { data } = useLoaderData() as AxiosResponse<Source[]>;
+    const { data } = useLoaderData() as AxiosResponse<ISource[]>;
 
     return (
         <div>

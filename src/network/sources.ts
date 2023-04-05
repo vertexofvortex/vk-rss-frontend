@@ -1,7 +1,7 @@
 import { AxiosPromise } from "axios";
-import { Source } from "../models";
+import { ISource } from "../models";
 import axiosInstance from "./axios-instance";
 
-export async function getSources(): AxiosPromise<Source[]> {
+export async function getSources(): AxiosPromise<ISource[]> {
     return axiosInstance.get("/sources");
 }
