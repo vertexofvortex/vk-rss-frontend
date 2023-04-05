@@ -1,4 +1,7 @@
+import { AxiosResponse } from "axios";
 import { createBrowserRouter } from "react-router-dom";
+import { Source } from "./models";
+import { getSources } from "./network/sources";
 import { FeedsAll } from "./routes/feeds/feeds-all";
 import { FeedsGroups } from "./routes/feeds/feeds-groups";
 import { Keys } from "./routes/keys/keys";
@@ -14,6 +17,9 @@ const router = createBrowserRouter([
             {
                 path: "/sources",
                 element: <Sources />,
+                loader: async (): Promise<AxiosResponse<Source[]>> => {
+                    return await getSources();
+                },
             },
             {
                 path: "/feeds",

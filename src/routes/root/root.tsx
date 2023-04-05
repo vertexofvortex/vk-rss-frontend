@@ -4,7 +4,7 @@ import { AppHeader, AppNavbar } from "../../components";
 
 export function Root() {
     return (
-        <AppShell navbar={<AppNavbar />} header={<AppHeader />} padding={"md"}>
+        <AppShell navbar={<AppNavbar />} header={<AppHeader />} padding={"xl"}>
             <Outlet />
         </AppShell>
     );
