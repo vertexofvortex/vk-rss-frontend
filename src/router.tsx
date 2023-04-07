@@ -1,8 +1,8 @@
-import { AxiosResponse, isAxiosError } from "axios";
+import { AxiosPromise, AxiosResponse, isAxiosError } from "axios";
 import { createBrowserRouter, redirect } from "react-router-dom";
 import { IGroup, IKey, IKeyCreate, ISource } from "./models";
 import { IPost } from "./models/Post";
-import { getGroups } from "./network/groups";
+import { createVKGroup, getGroups } from "./network/groups";
 import { createKey, deleteKey, getKeys } from "./network/keys";
 import { getPosts } from "./network/posts";
 import { getSources } from "./network/sources";
@@ -48,6 +48,43 @@ const router = createBrowserRouter([
                 loader: async (): Promise<AxiosResponse<IGroup[]>> => {
                     return await getGroups();
                 },
+                children: [
+                    {
+                        path: "create",
+                        action: async ({ params, request }) => {
+                            try {
+                                let formData = await request.formData();
+
+                                let groups_vk_ids = (
+                                    formData.get("groups") as string
+                                ).split(",");
+                                let usertoken_id = formData.get("usertoken_id");
+                                let passphrase = formData.get("passphrase");
+                                let requestPromises: AxiosPromise<any>[] = [];
+
+                                groups_vk_ids.map((group_vk_id) => {
+                                    requestPromises.push(
+                                        createVKGroup(
+                                            parseInt(group_vk_id),
+                                            parseInt(usertoken_id as string),
+                                            passphrase as string
+                                        )
+                                    );
+                                });
+
+                                return Promise.all(requestPromises).then(() =>
+                                    redirect("/groups")
+                                );
+                            } catch (error) {
+                                console.log("error", error);
+
+                                if (isAxiosError(error)) {
+                                    return error;
+                                }
+                            }
+                        },
+                    },
+                ],
             },
             {
                 path: "publish",

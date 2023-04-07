@@ -129,7 +129,6 @@ export function Keys() {
                         <TextInput
                             label={"Введите ключ API"}
                             description={
-                                // TODO: описать процесс получения токена
                                 <>
                                     Перейдите по{" "}
                                     <a
