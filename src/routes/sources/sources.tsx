@@ -10,35 +10,38 @@ export function Sources() {
     const { data } = useLoaderData() as AxiosResponse<ISource[]>;
 
     return (
-        <div>
-            <Table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Название</th>
-                        <th>Ссылка на RSS</th>
-                        <th>Описание</th>
-                        <th></th>
+        <Table striped>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Название</th>
+                    <th>Ссылка на RSS</th>
+                    <th>Описание</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {data.map((item) => (
+                    <tr key={item.id}>
+                        <td>{item.id}</td>
+                        <td>{item.title}</td>
+                        <td>
+                            <a href={item.rss_url} target="_blank">
+                                {item.rss_url}
+                            </a>
+                        </td>
+                        <td>{item.description}</td>
+                        <td
+                            style={{
+                                display: "flex",
+                                justifyContent: "right",
+                            }}
+                        >
+                            <SourceActions />
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    {data.map((item) => (
-                        <tr key={item.id}>
-                            <td>{item.id}</td>
-                            <td>{item.title}</td>
-                            <td>
-                                <a href={item.rss_url} target="_blank">
-                                    {item.rss_url}
-                                </a>
-                            </td>
-                            <td>{item.description}</td>
-                            <td>
-                                <SourceActions />
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </Table>
-        </div>
+                ))}
+            </tbody>
+        </Table>
     );
 }

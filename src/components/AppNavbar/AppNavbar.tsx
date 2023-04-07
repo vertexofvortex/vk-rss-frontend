@@ -1,14 +1,16 @@
-import { Navbar, NavLink } from "@mantine/core";
+import { Navbar, NavLink, Loader } from "@mantine/core";
 import {
     IconChevronRight,
     IconKey,
     IconListDetails,
     IconNews,
     IconShare,
+    IconUsersGroup,
 } from "@tabler/icons-react";
 import { NavLink as RouterLink } from "react-router-dom";
 import styles from "./AppNavbar.module.scss";
 
+// TODO: loaders for all links (мб их декомпозировать?)
 export function AppNavbar() {
     return (
         <Navbar width={{ base: 300 }}>
@@ -35,7 +37,13 @@ export function AppNavbar() {
                     {({ isActive, isPending }) => (
                         <NavLink
                             label="Общая лента"
-                            icon={<IconListDetails size={20} />}
+                            icon={
+                                !isPending ? (
+                                    <IconListDetails size={20} />
+                                ) : (
+                                    <Loader size={20} />
+                                )
+                            }
                             rightSection={<IconChevronRight size={20} />}
                             active={isActive}
                         />
@@ -52,6 +60,19 @@ export function AppNavbar() {
                     )}
                 </RouterLink>
             </NavLink>
+            <RouterLink to={"/groups"} className={styles.link}>
+                {({ isActive, isPending }) => (
+                    <NavLink
+                        icon={<IconUsersGroup size={20} />}
+                        label={"Подключенные группы"}
+                        description={
+                            "Подключите группы к сервису и настройте для них источники"
+                        }
+                        rightSection={<IconChevronRight size={20} />}
+                        active={isActive}
+                    />
+                )}
+            </RouterLink>
             <RouterLink to={"/publish"} className={styles.link}>
                 {({ isActive, isPending }) => (
                     <NavLink
