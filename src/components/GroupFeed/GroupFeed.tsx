@@ -10,10 +10,10 @@ import {
     UnstyledButton,
 } from "@mantine/core";
 import { IGroupWithPosts } from "../../models/Group";
-import { useState } from "react";
+import { memo, useState } from "react";
 import { PostCard } from "../PostCard/PostCard";
 
-export function GroupFeed(group: IGroupWithPosts) {
+export const GroupFeed = memo((group: IGroupWithPosts) => {
     const [activePage, setActivePage] = useState<number>(1);
     const [activeCategory, setActiveCategory] = useState<string>();
     const [categories, setCategories] = useState<Set<string>>();
@@ -146,4 +146,4 @@ export function GroupFeed(group: IGroupWithPosts) {
             )}
         </Accordion.Item>
     );
-}
+});

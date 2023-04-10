@@ -19,10 +19,15 @@ import {
 import { NavLink as RouterLink } from "react-router-dom";
 import styles from "./AppNavbar.module.scss";
 import { useAppSelector } from "../../app/hooks";
+import { useEffect } from "react";
 
 // TODO: loaders for all links (мб их декомпозировать?)
 export function AppNavbar() {
     const postsCart = useAppSelector((state) => state.postsCart.posts);
+
+    useEffect(() => {
+        console.log(postsCart);
+    }, [postsCart]);
 
     return (
         <Navbar width={{ base: 300 }}>
@@ -119,7 +124,7 @@ export function AppNavbar() {
                     {({ isActive, isPending }) => (
                         <NavLink
                             icon={
-                                postsCart.length > 0 ? (
+                                Object.keys(postsCart).length > 0 ? (
                                     <Badge
                                         size="xs"
                                         variant="filled"
@@ -128,7 +133,7 @@ export function AppNavbar() {
                                         h={20}
                                         p={0}
                                     >
-                                        {postsCart.length}
+                                        {Object.keys(postsCart).length}
                                     </Badge>
                                 ) : (
                                     <IconShare size={20} />

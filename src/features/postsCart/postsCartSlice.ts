@@ -2,11 +2,13 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { IPost } from "../../models";
 
 interface IPostsCart {
-    posts: IPost[];
+    posts: {
+        [id: number]: IPost;
+    };
 }
 
 const initialState: IPostsCart = {
-    posts: [],
+    posts: {},
 };
 
 export const postsCartSlice = createSlice({
@@ -16,17 +18,19 @@ export const postsCartSlice = createSlice({
         addPost: (state, action: PayloadAction<IPost>) => {
             return {
                 ...state,
-                posts: [...state.posts, action.payload],
+                posts: {
+                    ...state.posts,
+                    [action.payload.id]: action.payload,
+                },
             };
         },
         removePost: (state, action: PayloadAction<IPost>) => {
+            let newPostsCart = { ...state.posts };
+            delete newPostsCart[action.payload.id];
+
             return {
                 ...state,
-                posts: [
-                    ...state.posts.filter(
-                        (post) => post.id != action.payload.id
-                    ),
-                ],
+                posts: newPostsCart,
             };
         },
     },

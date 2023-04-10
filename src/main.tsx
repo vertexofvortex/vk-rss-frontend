@@ -6,6 +6,9 @@ import { RouterProvider } from "react-router-dom";
 import router from "./router";
 import { Provider } from "react-redux";
 import { store } from "./app/store";
+import { saveState } from "./app/store-persist";
+
+store.subscribe(() => saveState(store.getState()));
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <React.StrictMode>

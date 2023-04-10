@@ -12,8 +12,9 @@ import { IconExternalLink } from "@tabler/icons-react";
 import { IPost } from "../../models/Post";
 import { addPost, removePost } from "../../features/postsCart/postsCartSlice";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { memo } from "react";
 
-export function PostCard(post: IPost) {
+export const PostCard = memo((post: IPost) => {
     const postsCart = useAppSelector((state) => state.postsCart.posts);
     const dispatch = useAppDispatch();
 
@@ -61,18 +62,33 @@ export function PostCard(post: IPost) {
                 {post.categories}
             </Badge>
             <Flex gap={"md"}>
-                <Button
-                    variant="light"
-                    color="blue"
-                    mt="md"
-                    radius="md"
-                    style={{
-                        flexGrow: "1",
-                    }}
-                    onClick={() => dispatch(addPost(post))}
-                >
-                    Добавить в очередь постинга
-                </Button>
+                {!(post.id in postsCart) ? (
+                    <Button
+                        variant="light"
+                        color="blue"
+                        mt="md"
+                        radius="md"
+                        style={{
+                            flexGrow: "1",
+                        }}
+                        onClick={() => dispatch(addPost(post))}
+                    >
+                        Добавить в очередь
+                    </Button>
+                ) : (
+                    <Button
+                        variant="light"
+                        color="red"
+                        mt="md"
+                        radius="md"
+                        style={{
+                            flexGrow: "1",
+                        }}
+                        onClick={() => dispatch(removePost(post))}
+                    >
+                        Удалить из очереди
+                    </Button>
+                )}
                 <Button
                     variant="light"
                     color="blue"
@@ -127,4 +143,4 @@ export function PostCard(post: IPost) {
 			</Flex> */}
         </Card>
     );
-}
+});

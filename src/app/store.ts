@@ -1,10 +1,14 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import postsCartReducer from "../features/postsCart/postsCartSlice";
+import { loadState } from "./store-persist";
+
+const reducers = combineReducers({
+    postsCart: postsCartReducer,
+});
 
 export const store = configureStore({
-    reducer: {
-        postsCart: postsCartReducer,
-    },
+    reducer: reducers,
+    preloadedState: loadState(),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
