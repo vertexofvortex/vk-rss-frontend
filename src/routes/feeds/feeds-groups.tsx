@@ -31,7 +31,7 @@ export function FeedsGroups() {
                 variant={"contained"}
             >
                 {data?.map((group) => (
-                    <GroupFeed {...group} />
+                    <GroupFeed {...group} key={group.id} />
                 ))}
             </Accordion>
         </Stack>

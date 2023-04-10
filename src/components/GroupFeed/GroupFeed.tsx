@@ -70,6 +70,7 @@ export function GroupFeed(group: IGroupWithPosts) {
                                             onClick={() =>
                                                 setActiveCategory(category)
                                             }
+                                            key={category}
                                         >
                                             <Badge
                                                 variant={
