@@ -10,8 +10,13 @@ import {
 } from "@mantine/core";
 import { IconExternalLink } from "@tabler/icons-react";
 import { IPost } from "../../models/Post";
+import { addPost, removePost } from "../../features/postsCart/postsCartSlice";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
 
-export function PostCard(props: IPost) {
+export function PostCard(post: IPost) {
+    const postsCart = useAppSelector((state) => state.postsCart.posts);
+    const dispatch = useAppDispatch();
+
     return (
         <Card
             shadow="sm"
@@ -25,9 +30,9 @@ export function PostCard(props: IPost) {
             }}
         >
             <Card.Section>
-                {props.image_url && (
+                {post.image_url && (
                     <Image
-                        src={props.image_url}
+                        src={post.image_url}
                         height={160}
                         imageProps={{ loading: "lazy" }}
                         placeholder={<div>bruh</div>}
@@ -35,7 +40,7 @@ export function PostCard(props: IPost) {
                 )}
             </Card.Section>
             <Group position="apart" mt="md" mb="xs">
-                <Text weight={500}>{props.title}</Text>
+                <Text weight={500}>{post.title}</Text>
             </Group>
             <Text
                 size="sm"
@@ -44,7 +49,7 @@ export function PostCard(props: IPost) {
                     flexGrow: "1",
                 }}
             >
-                {props.description}
+                {post.description}
             </Text>
             <Space p={"xs"} />
             <Badge
@@ -53,8 +58,33 @@ export function PostCard(props: IPost) {
                     width: "fit-content",
                 }}
             >
-                {props.categories}
+                {post.categories}
             </Badge>
+            <Flex gap={"md"}>
+                <Button
+                    variant="light"
+                    color="blue"
+                    mt="md"
+                    radius="md"
+                    style={{
+                        flexGrow: "1",
+                    }}
+                    onClick={() => dispatch(addPost(post))}
+                >
+                    Добавить в очередь постинга
+                </Button>
+                <Button
+                    variant="light"
+                    color="blue"
+                    mt="md"
+                    radius="md"
+                    component="a"
+                    href={post.post_url}
+                    target={"_blank"}
+                >
+                    <IconExternalLink size={20} />
+                </Button>
+            </Flex>
             {/* <Flex gap={"xs"}>
 				{!postsCart.includes(props) ? (
 					<Button

@@ -1,8 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
+import postsCartReducer from "../features/postsCart/postsCartSlice";
 
-const store = configureStore({
+export const store = configureStore({
     reducer: {
-        // ...
+        postsCart: postsCartReducer,
     },
 });
 
