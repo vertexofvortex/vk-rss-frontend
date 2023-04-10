@@ -22,7 +22,7 @@ import { IconPlus, IconSettings } from "@tabler/icons-react";
 import { AxiosResponse } from "axios";
 import { forwardRef, useEffect, useState } from "react";
 import { useFetcher, useLoaderData } from "react-router-dom";
-import { AddGroupsModal } from "../../components";
+import { AddGroupsModal, GroupActions } from "../../components";
 import { IGroup, IKey } from "../../models";
 import { getVKGroups } from "../../network/groups";
 import { getKeys } from "../../network/keys";
@@ -51,9 +51,7 @@ export function Groups() {
                                         </Text>
                                     </div>
                                 </Group>
-                                <ActionIcon>
-                                    <IconSettings size={"1rem"} />
-                                </ActionIcon>
+                                <GroupActions {...group} />
                             </Flex>
                         </Card>
                     </Grid.Col>
@@ -80,17 +78,3 @@ export function Groups() {
         </>
     );
 }
-
-// const SelectItem = forwardRef<HTMLDivElement, IGroup>(
-//     ({ vk_id, token_id, id, name, photo_url, ...others }: IGroup, ref) => (
-//         <div ref={ref} {...others}>
-//             <Group noWrap>
-//                 <Avatar src={photo_url} />
-
-//                 <div>
-//                     <Text size="sm">{name}</Text>
-//                 </div>
-//             </Group>
-//         </div>
-//     )
-// );

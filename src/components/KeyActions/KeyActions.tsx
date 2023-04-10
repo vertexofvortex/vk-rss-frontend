@@ -32,6 +32,7 @@ export function KeyActions({ token }: Props) {
                     <Menu.Item
                         icon={<IconTrash size={14} />}
                         onClick={() => open()}
+                        color={"red"}
                     >
                         Удалить
                     </Menu.Item>

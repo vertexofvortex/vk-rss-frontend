@@ -5,3 +5,4 @@ export { PostCard } from "./PostCard/PostCard";
 export { InputPassword } from "./InputPassword/InputPassword";
 export { KeyActions } from "./KeyActions/KeyActions";
 export { AddGroupsModal } from "./AddGroupsModal/AddGroupsModal";
+export { GroupActions } from "./GroupActions/GroupActions";

@@ -11,7 +11,9 @@ export function SourceActions() {
             </Menu.Target>
             <Menu.Dropdown>
                 <Menu.Label>Действия</Menu.Label>
-                <Menu.Item icon={<IconTrash size={14} />}>Удалить</Menu.Item>
+                <Menu.Item icon={<IconTrash size={14} />} color={"red"}>
+                    Удалить
+                </Menu.Item>
                 <Menu.Item icon={<IconEdit size={14} />}>
                     Редактировать
                 </Menu.Item>
