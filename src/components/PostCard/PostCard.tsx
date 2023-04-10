@@ -25,12 +25,14 @@ export function PostCard(props: IPost) {
             }}
         >
             <Card.Section>
-                <Image
-                    src={props.image_url ? props.image_url : undefined}
-                    height={160}
-                    imageProps={{ loading: "lazy" }}
-                    placeholder={<div>bruh</div>}
-                />
+                {props.image_url && (
+                    <Image
+                        src={props.image_url}
+                        height={160}
+                        imageProps={{ loading: "lazy" }}
+                        placeholder={<div>bruh</div>}
+                    />
+                )}
             </Card.Section>
             <Group position="apart" mt="md" mb="xs">
                 <Text weight={500}>{props.title}</Text>
@@ -54,45 +56,45 @@ export function PostCard(props: IPost) {
                 {props.categories}
             </Badge>
             {/* <Flex gap={"xs"}>
-        {!postsCart.includes(props) ? (
-          <Button
-            variant="light"
-            color="blue"
-            mt="md"
-            radius="md"
-            style={{
-              flexGrow: "1",
-            }}
-            onClick={() => dispatch(add_post(props))}
-          >
-            Добавить в очередь постинга
-          </Button>
-        ) : (
-          <Button
-            variant="light"
-            color="red"
-            mt="md"
-            radius="md"
-            style={{
-              flexGrow: "1",
-            }}
-            onClick={() => dispatch(remove_post(props))}
-          >
-            Удалить из очереди
-          </Button>
-        )}
-        <Button
-          variant="light"
-          color="blue"
-          mt="md"
-          radius="md"
-          component="a"
-          href={props.url}
-          target={"_blank"}
-        >
-          <IconExternalLink size={20} />
-        </Button>
-      </Flex> */}
+				{!postsCart.includes(props) ? (
+					<Button
+						variant="light"
+						color="blue"
+						mt="md"
+						radius="md"
+						style={{
+							flexGrow: "1",
+						}}
+						onClick={() => dispatch(add_post(props))}
+					>
+						Добавить в очередь постинга
+					</Button>
+				) : (
+					<Button
+						variant="light"
+						color="red"
+						mt="md"
+						radius="md"
+						style={{
+							flexGrow: "1",
+						}}
+						onClick={() => dispatch(remove_post(props))}
+					>
+						Удалить из очереди
+					</Button>
+				)}
+				<Button
+					variant="light"
+					color="blue"
+					mt="md"
+					radius="md"
+					component="a"
+					href={props.url}
+					target={"_blank"}
+				>
+					<IconExternalLink size={20} />
+				</Button>
+			</Flex> */}
         </Card>
     );
 }

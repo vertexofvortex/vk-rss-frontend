@@ -2,7 +2,12 @@ import { AxiosPromise, AxiosResponse, isAxiosError } from "axios";
 import { createBrowserRouter, redirect } from "react-router-dom";
 import { IGroup, IKey, IKeyCreate, ISource } from "./models";
 import { IPost } from "./models/Post";
-import { createVKGroup, getGroups } from "./network/groups";
+import {
+    createVKGroup,
+    getAllGroupsPosts,
+    getGroupPosts,
+    getGroups,
+} from "./network/groups";
 import { createKey, deleteKey, getKeys } from "./network/keys";
 import { getPosts } from "./network/posts";
 import { getSources } from "./network/sources";
@@ -13,6 +18,7 @@ import { Keys } from "./routes/keys/keys";
 import { Publish } from "./routes/publish/publish";
 import { Root } from "./routes/root/root";
 import { Sources } from "./routes/sources/sources";
+import { IGroupWithPosts } from "./models/Group";
 
 const router = createBrowserRouter([
     {
@@ -38,8 +44,8 @@ const router = createBrowserRouter([
             {
                 path: "feeds/groups",
                 element: <FeedsGroups />,
-                loader: async (): Promise<AxiosResponse<IGroup[]>> => {
-                    return await getGroups();
+                loader: async (): Promise<AxiosResponse<IGroupWithPosts[]>> => {
+                    return await getAllGroupsPosts();
                 },
             },
             {

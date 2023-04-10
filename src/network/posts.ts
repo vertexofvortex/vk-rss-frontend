@@ -10,5 +10,5 @@ export async function getPosts(): AxiosPromise<IPost[]> {
 export async function getPostsBySourceId(
     source_id: number
 ): AxiosPromise<IPost[]> {
-    return axiosInstance.get(`/posts/by_source_id/${source_id}`);
+    return axiosInstance.get(`/posts/by_source/${source_id}`);
 }

@@ -1,3 +1,5 @@
+import { IPost } from "./Post";
+
 export type IGroup = {
     vk_id: number;
     token_id: number;
@@ -20,3 +22,7 @@ export type IGroupExternal = {
     photo_100: string;
     photo_200: string;
 };
+
+export interface IGroupWithPosts extends IGroup {
+    posts: IPost[];
+}
