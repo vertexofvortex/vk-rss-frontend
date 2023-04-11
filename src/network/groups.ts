@@ -5,6 +5,7 @@ import axiosInstance from "./axios-instance";
 import { getGroupSources } from "./sources";
 import { getPostsBySourceId } from "./posts";
 import { ISourceWithPosts } from "../models/Source";
+import { IGroupSourceCreate } from "../models/GroupSource";
 
 export async function getGroups(): AxiosPromise<IGroup[]> {
     return axiosInstance.get("/groups");
@@ -41,40 +42,17 @@ export async function getAllGroupsPosts(): AxiosPromise<IGroupWithPosts[]> {
     return axiosInstance.get(`/groups/posts/all`);
 }
 
-// export async function getGroupsPosts(): Promise<IGroupWithPosts[]> {
-//     return new Promise((resolve, reject) => {
-//         let groupsWithPosts: IGroupWithPosts[] = [];
+export async function attachSourcesToGroup(groupSources: IGroupSourceCreate[]) {
+    return axiosInstance.post(`/groups/sources`, groupSources);
+}
 
-//         getGroups().then((groupsData) => {
-//             groupsData.data.map(async (group) => {
-//                 let groupWithPosts: IGroupWithPosts = {
-//                     ...group,
-//                     sources: await getGroupSources(group.id).then(
-//                         async (sourcesRes) => {
-//                             let sourcesWithPosts: ISourceWithPosts[] = [];
+export async function detachSourceFromGroup(
+    group_id: number,
+    source_id: number
+) {
+    return axiosInstance.delete(`/groups/${group_id}/sources/${source_id}`);
+}
 
-//                             sourcesRes.data.map(async (source) => {
-//                                 let sourceWithPosts: ISourceWithPosts = {
-//                                     ...source,
-//                                     posts: await getPostsBySourceId(
-//                                         source.id
-//                                     ).then((postsRes) => postsRes.data),
-//                                 };
-
-//                                 sourcesWithPosts.push(sourceWithPosts);
-//                             });
-
-//                             return sourcesWithPosts;
-//                         }
-//                     ),
-//                 };
-
-//                 groupsWithPosts.push(groupWithPosts);
-//                 console.log("pushed a new group");
-//             });
-
-//             resolve(groupsWithPosts);
-//             console.log("promise resolved");
-//         });
-//     });
-// }
+export async function removeGroup(group_id: number): AxiosPromise<any> {
+    return axiosInstance.delete(`/groups/${group_id}`);
+}

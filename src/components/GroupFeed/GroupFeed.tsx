@@ -8,6 +8,8 @@ import {
     Pagination,
     Text,
     UnstyledButton,
+    Indicator,
+    Flex,
 } from "@mantine/core";
 import { IGroupWithPosts } from "../../models/Group";
 import { memo, useState } from "react";
@@ -31,10 +33,26 @@ export const GroupFeed = memo((group: IGroupWithPosts) => {
                     </Avatar>
                     <div>
                         <Text lh={"1em"}>
-                            <b>{group.name}</b>
+                            <Flex align={"center"}>
+                                <b>{group.name}</b>
+                                <Badge
+                                    size="xs"
+                                    variant="light"
+                                    color="red"
+                                    w={"auto"}
+                                    miw={20}
+                                    h={20}
+                                    ml={10}
+                                    p={0}
+                                    pr={5}
+                                    pl={5}
+                                >
+                                    {group.posts.length}
+                                </Badge>
+                            </Flex>
                         </Text>
                         <Text size={"xs"} opacity={0.5}>
-                            #{group.vk_id}
+                            @{group.vk_id}
                         </Text>
                     </div>
                 </Group>

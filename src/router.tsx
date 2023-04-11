@@ -7,6 +7,7 @@ import {
     getAllGroupsPosts,
     getGroupPosts,
     getGroups,
+    removeGroup,
 } from "./network/groups";
 import { createKey, deleteKey, getKeys } from "./network/keys";
 import { getPosts } from "./network/posts";
@@ -19,6 +20,7 @@ import { Publish } from "./routes/publish/publish";
 import { Root } from "./routes/root/root";
 import { Sources } from "./routes/sources/sources";
 import { IGroupWithPosts } from "./models/Group";
+import { notifications } from "@mantine/notifications";
 
 const router = createBrowserRouter([
     {
@@ -78,15 +80,42 @@ const router = createBrowserRouter([
                                     );
                                 });
 
-                                return Promise.all(requestPromises).then(() =>
-                                    redirect("/groups")
-                                );
+                                return Promise.all(requestPromises).then(() => {
+                                    notifications.show({
+                                        message:
+                                            requestPromises.length == 1
+                                                ? "Группа добавлена"
+                                                : "Группы добавлены",
+                                    });
+
+                                    return redirect("/groups");
+                                });
                             } catch (error) {
                                 console.log("error", error);
 
                                 if (isAxiosError(error)) {
                                     return error;
                                 }
+                            }
+                        },
+                    },
+                    {
+                        path: ":id/delete",
+                        action: async ({ params }) => {
+                            try {
+                                return removeGroup(
+                                    parseInt((params as { id: string }).id)
+                                ).then((res) => {
+                                    notifications.show({
+                                        message: "Группа удалена",
+                                    });
+
+                                    return redirect("/groups");
+                                });
+                            } catch (error) {
+                                console.log(error);
+
+                                if (isAxiosError(error)) return error;
                             }
                         },
                     },

@@ -57,16 +57,25 @@ export function Groups() {
                     </Grid.Col>
                 ))}
                 <Grid.Col span={4}>
-                    <Button
-                        fullWidth
-                        variant={"light"}
-                        style={{ height: "100%" }}
-                        radius={"md"}
-                        leftIcon={<IconPlus size={"1rem"} />}
-                        onClick={() => open()}
-                    >
-                        Добавить группу
-                    </Button>
+                    <UnstyledButton onClick={() => open()} w={"100%"}>
+                        <Card
+                            padding="xs"
+                            radius="md"
+                            withBorder
+                            style={{ borderStyle: "dashed" }}
+                        >
+                            <Flex justify={"space-between"} align={"center"}>
+                                <Group>
+                                    <Avatar color={"blue"}>+</Avatar>
+                                    <div>
+                                        <Text color={"dimmed"} lh={"1em"}>
+                                            Добавить группу
+                                        </Text>
+                                    </div>
+                                </Group>
+                            </Flex>
+                        </Card>
+                    </UnstyledButton>
                 </Grid.Col>
             </Grid>
             <AddGroupsModal

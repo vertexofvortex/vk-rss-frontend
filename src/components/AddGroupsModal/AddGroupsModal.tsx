@@ -5,13 +5,16 @@ import {
     Button,
     Flex,
     Group,
+    Input,
     InputBase,
     LoadingOverlay,
     Modal,
     ModalProps,
     MultiSelect,
     PasswordInput,
+    Select,
     Text,
+    SelectItem as SelectComponentItem,
 } from "@mantine/core";
 import { Form, useForm } from "@mantine/form";
 import { forwardRef, useEffect, useState } from "react";
@@ -34,6 +37,11 @@ interface ItemProps extends React.ComponentPropsWithoutRef<"div"> {
     description: string;
 }
 
+interface KeyFormValues {
+    usertoken_id: number;
+    passphrase: string;
+}
+
 const SelectItem = forwardRef<HTMLDivElement, ItemProps>(
     ({ image, label, description, ...others }: ItemProps, ref) => (
         <div ref={ref} {...others}>
@@ -54,14 +62,14 @@ const SelectItem = forwardRef<HTMLDivElement, ItemProps>(
 export function AddGroupsModal(props: ModalProps) {
     const fetcher = useFetcher();
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [keys, setKeys] = useState<IKey[]>();
+    const [keys, setKeys] = useState<IKey[]>([]);
     const [groups, setGroups] = useState<IGroupExternal[]>([]);
     const [groupsMantine, setGroupsMantine] = useState<IGroupMantine[]>([]);
     const [step, setStep] = useState<"selectKey" | "addGroups">("selectKey");
     const [tokenId, setTokenId] = useState<string>();
     const [passphrase, setPassphrase] = useState<string>();
 
-    const formKey = useForm();
+    const formKey = useForm<KeyFormValues>();
     const formGroups = useForm({
         initialValues: {
             groups: "",
@@ -76,6 +84,8 @@ export function AddGroupsModal(props: ModalProps) {
 
     function handleLoadGroups(usertoken_id: number, passphrase: string) {
         setIsLoading(true);
+        console.log(usertoken_id, passphrase);
+
         getVKGroups(usertoken_id, passphrase)
             .then((res) => {
                 setGroups(res.data);
@@ -106,11 +116,12 @@ export function AddGroupsModal(props: ModalProps) {
         setGroupsMantine(groups_mantine);
     }, [groups]);
 
-    // function handleAddGroups(groups_vk_ids: number[]) {
-    //     groups_vk_ids.map((group_vk_id) => {
-    //         createVKGroup();
-    //     });
-    // }
+    function adaptKey(key: IKey): SelectComponentItem {
+        return {
+            label: key.name,
+            value: key.id.toString(),
+        };
+    }
 
     return (
         <Modal {...props}>
@@ -120,26 +131,20 @@ export function AddGroupsModal(props: ModalProps) {
                 <fetcher.Form
                     onSubmit={formKey.onSubmit((values) =>
                         handleLoadGroups(
-                            values.usertoken as number,
+                            values.usertoken_id as number,
                             values.passphrase as string
                         )
                     )}
                 >
-                    <InputBase
+                    <Select
                         label={"Выберите ключ"}
                         description={
                             "С этой страницы будет получен список групп, в которых вы являетесь администратором"
                         }
-                        component={"select"}
                         mb={"md"}
-                        {...formKey.getInputProps("usertoken")}
-                    >
-                        {keys?.map((key) => (
-                            <option key={key.id} value={key.id}>
-                                {key.name}
-                            </option>
-                        ))}
-                    </InputBase>
+                        data={keys?.map((key) => adaptKey(key))}
+                        {...formKey.getInputProps("usertoken_id")}
+                    />
                     <PasswordInput
                         label={"Введите кодовую фразу для этого ключа"}
                         mb={"md"}
