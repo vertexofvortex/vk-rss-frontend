@@ -3,7 +3,7 @@ import { createBrowserRouter, redirect } from "react-router-dom";
 import { IGroup, IKey, IKeyCreate, ISource } from "./models";
 import { IPost } from "./models/Post";
 import {
-    createVKGroup,
+    createGroup,
     getAllGroupsPosts,
     getGroupPosts,
     getGroups,
@@ -11,7 +11,12 @@ import {
 } from "./network/groups";
 import { createKey, deleteKey, getKeys } from "./network/keys";
 import { getPosts } from "./network/posts";
-import { getSources } from "./network/sources";
+import {
+    createSource,
+    deleteSource,
+    editSource,
+    getSources,
+} from "./network/sources";
 import { FeedsAll } from "./routes/feeds/feeds-all";
 import { FeedsGroups } from "./routes/feeds/feeds-groups";
 import { Groups } from "./routes/groups/groups";
@@ -34,6 +39,57 @@ const router = createBrowserRouter([
                 loader: async (): Promise<AxiosResponse<ISource[]>> => {
                     return await getSources();
                 },
+                children: [
+                    {
+                        path: "create",
+                        action: async ({ params, request }) => {
+                            try {
+                                let formData = await request.formData();
+
+                                return createSource(
+                                    formData.get("title") as string,
+                                    formData.get("description") as string,
+                                    formData.get("rss_url") as string
+                                );
+                            } catch (error) {}
+                        },
+                    },
+                    {
+                        path: ":id/edit",
+                        action: async ({ params, request }) => {
+                            try {
+                                let formData = await request.formData();
+
+                                return editSource(
+                                    formData.get("title") as string,
+                                    formData.get("description") as string,
+                                    formData.get("rss_url") as string
+                                );
+                            } catch (error) {}
+                        },
+                    },
+                    {
+                        path: ":id/delete",
+                        action: async ({ params }) => {
+                            try {
+                                notifications.show({
+                                    message: "Источник удалён",
+                                });
+
+                                return deleteSource(
+                                    parseInt((params as { id: string }).id)
+                                );
+                            } catch (error) {
+                                notifications.show({
+                                    message: "Произошла ошибка",
+                                    color: "red",
+                                });
+
+                                if (isAxiosError(error)) return error;
+                            }
+                        },
+                    },
+                ],
             },
             {
                 // FIXME: господи помилуй за эти два роута
@@ -72,7 +128,7 @@ const router = createBrowserRouter([
 
                                 groups_vk_ids.map((group_vk_id) => {
                                     requestPromises.push(
-                                        createVKGroup(
+                                        createGroup(
                                             parseInt(group_vk_id),
                                             parseInt(usertoken_id as string),
                                             passphrase as string

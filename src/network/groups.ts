@@ -20,7 +20,7 @@ export async function getVKGroups(
     );
 }
 
-export async function createVKGroup(
+export async function createGroup(
     group_vk_id: number,
     token_id: number,
     passphrase: string

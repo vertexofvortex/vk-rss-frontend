@@ -47,7 +47,7 @@ export function Groups() {
                                             <b>{group.name}</b>
                                         </Text>
                                         <Text size={"xs"} opacity={0.5}>
-                                            #{group.vk_id}
+                                            @{group.vk_id}
                                         </Text>
                                     </div>
                                 </Group>

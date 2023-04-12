@@ -100,6 +100,7 @@ export function Keys() {
                         Добавить новый ключ доступа
                     </Button>
                 </Container>
+                {/* TODO: decompose it */}
                 <Modal
                     opened={opened}
                     onClose={close}

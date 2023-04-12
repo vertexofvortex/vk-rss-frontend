@@ -10,3 +10,5 @@ export { AddGroupsModal } from "./AddGroupsModal/AddGroupsModal";
 export { GroupActions } from "./GroupActions/GroupActions";
 export { GroupFeed } from "./GroupFeed/GroupFeed";
 export { GroupsSourcesModal } from "./GroupsSourcesModal/GroupsSourcesModal";
+export { AddSourceModal } from "./AddSourceModal/AddSourceModal";
+export { RemoveSourceModal } from "./RemoveSourceModal/RemoveSourceModal";

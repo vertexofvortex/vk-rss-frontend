@@ -21,7 +21,7 @@ import { forwardRef, useEffect, useState } from "react";
 import { useActionData, useFetcher } from "react-router-dom";
 import { IGroup, IKey } from "../../models";
 import { IGroupExternal } from "../../models/Group";
-import { createVKGroup, getVKGroups } from "../../network/groups";
+import { createGroup, getVKGroups } from "../../network/groups";
 import { getKeys } from "../../network/keys";
 
 interface IGroupMantine {

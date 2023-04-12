@@ -25,10 +25,6 @@ import { useEffect } from "react";
 export function AppNavbar() {
     const postsCart = useAppSelector((state) => state.postsCart.posts);
 
-    useEffect(() => {
-        console.log(postsCart);
-    }, [postsCart]);
-
     return (
         <Navbar width={{ base: 300 }}>
             <Navbar.Section grow>
