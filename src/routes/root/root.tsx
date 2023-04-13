@@ -21,7 +21,12 @@ export function Root({ isError }: Props) {
     const error = useRouteError() as object;
 
     return (
-        <AppShell navbar={<AppNavbar />} header={<AppHeader />} padding={"xl"}>
+        <AppShell
+            navbar={<AppNavbar />}
+            header={<AppHeader />}
+            padding={"xl"}
+            bg={"#FCFCFC"}
+        >
             {!isError ? (
                 <Outlet />
             ) : (

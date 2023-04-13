@@ -12,16 +12,19 @@ import {
     Flex,
 } from "@mantine/core";
 import { IGroupWithPosts } from "../../models/Group";
-import { memo, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { PostCard } from "../PostCard/PostCard";
 
 export const GroupFeed = memo((group: IGroupWithPosts) => {
     const [activePage, setActivePage] = useState<number>(1);
     const [activeCategory, setActiveCategory] = useState<string>();
-    const [categories, setCategories] = useState<Set<string>>();
 
     function parseCategories(): Set<string> {
-        return new Set(group.posts.map((post) => post.categories));
+        return new Set(
+            group.posts
+                .map((post) => post.categories)
+                .filter((category) => category != null)
+        );
     }
 
     return (
@@ -64,47 +67,54 @@ export const GroupFeed = memo((group: IGroupWithPosts) => {
                             <Accordion.Item value={"categories"}>
                                 <Accordion.Control>Категории</Accordion.Control>
                                 <Accordion.Panel>
-                                    <UnstyledButton
-                                        onClick={() =>
-                                            setActiveCategory(undefined)
-                                        }
-                                    >
-                                        <Badge
-                                            variant={
-                                                !activeCategory
-                                                    ? "filled"
-                                                    : "outline"
-                                            }
-                                            style={{
-                                                width: "fit-content",
-                                            }}
-                                            mr={"xs"}
-                                        >
-                                            Все
-                                        </Badge>
-                                    </UnstyledButton>
-                                    {[...parseCategories()].map((category) => (
+                                    <Flex wrap={"wrap"} gap={3}>
                                         <UnstyledButton
                                             onClick={() =>
-                                                setActiveCategory(category)
+                                                setActiveCategory(undefined)
                                             }
-                                            key={category}
                                         >
                                             <Badge
                                                 variant={
-                                                    category == activeCategory
+                                                    !activeCategory
                                                         ? "filled"
                                                         : "outline"
                                                 }
                                                 style={{
                                                     width: "fit-content",
                                                 }}
-                                                mr={"xs"}
+                                                mr={0}
                                             >
-                                                {category}
+                                                Все
                                             </Badge>
                                         </UnstyledButton>
-                                    ))}
+                                        {[...parseCategories()].map(
+                                            (category) => (
+                                                <UnstyledButton
+                                                    onClick={() =>
+                                                        setActiveCategory(
+                                                            category
+                                                        )
+                                                    }
+                                                    key={category}
+                                                >
+                                                    <Badge
+                                                        variant={
+                                                            category ==
+                                                            activeCategory
+                                                                ? "filled"
+                                                                : "outline"
+                                                        }
+                                                        style={{
+                                                            width: "fit-content",
+                                                        }}
+                                                        mr={0}
+                                                    >
+                                                        {category}
+                                                    </Badge>
+                                                </UnstyledButton>
+                                            )
+                                        )}
+                                    </Flex>
                                 </Accordion.Panel>
                             </Accordion.Item>
                         </Accordion>
@@ -158,7 +168,9 @@ export const GroupFeed = memo((group: IGroupWithPosts) => {
             {group.posts.length == 0 && (
                 <Accordion.Panel>
                     <Alert color={"yellow"}>
-                        К этой группе не привязан ни один источник.
+                        К этой группе не привязан ни один источник. Перейдите в
+                        раздел "Подключенные группы", нажмите на шестерёнку и
+                        выберите пункт "Настроить источники"
                     </Alert>
                 </Accordion.Panel>
             )}

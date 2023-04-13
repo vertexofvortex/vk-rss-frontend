@@ -1,15 +1,20 @@
 import {
     ActionIcon,
+    Alert,
     Button,
     Container,
+    Flex,
     Group,
     Menu,
     Table,
+    Tooltip,
 } from "@mantine/core";
 import {
     IconAdjustments,
+    IconAlertCircle,
     IconEdit,
     IconPlus,
+    IconRefresh,
     IconTrash,
 } from "@tabler/icons-react";
 import { AxiosResponse } from "axios";
@@ -18,50 +23,94 @@ import { useLoaderData } from "react-router-dom";
 import { AddSourceModal, SourceActions } from "../../components";
 import { ISource } from "../../models";
 import { useDisclosure } from "@mantine/hooks";
+import { forceParse } from "../../network/parsing";
+import { notifications } from "@mantine/notifications";
 
 export function Sources() {
     const { data } = useLoaderData() as AxiosResponse<ISource[]>;
     const [sourcesModalOpened, sourcesModalActions] = useDisclosure(false);
 
+    function handleForceParse() {
+        forceParse()
+            .then(({ data }) => {
+                notifications.show({
+                    message: `Посты обновлены. Всего постов в базе: ${data}`,
+                });
+            })
+            .catch((err) => {
+                notifications.show({
+                    message: "Произошла ошибка.",
+                    color: "red",
+                });
+            });
+    }
+
     return (
         <>
             <Group mb={"xs"}>
-                <Table striped>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Название</th>
-                            <th>Ссылка на RSS</th>
-                            <th>Описание</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {data.map((item) => (
-                            <tr key={item.id}>
-                                <td>{item.id}</td>
-                                <td>{item.title}</td>
-                                <td>
-                                    <a href={item.rss_url} target="_blank">
-                                        {item.rss_url}
-                                    </a>
-                                </td>
-                                <td>{item.description}</td>
-                                <td
-                                    style={{
-                                        display: "flex",
-                                        justifyContent: "right",
-                                    }}
-                                >
-                                    <SourceActions {...item} />
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </Table>
+                {data.length > 0 ? (
+                    <>
+                        <Alert
+                            icon={<IconAlertCircle size="1rem" />}
+                            color={"blue"}
+                            w={"100%"}
+                            mb={"xs"}
+                        >
+                            Все добавленные источники будут автоматически
+                            опрашиваться раз в час, а полученные посты
+                            записываться в базу данных. Дубли постов будут
+                            пропускаться.
+                        </Alert>
+                        <Table striped>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Название</th>
+                                    <th>Ссылка на RSS</th>
+                                    <th>Описание</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {data.map((item) => (
+                                    <tr key={item.id}>
+                                        <td>{item.id}</td>
+                                        <td>{item.title}</td>
+                                        <td>
+                                            <a
+                                                href={item.rss_url}
+                                                target="_blank"
+                                            >
+                                                {item.rss_url}
+                                            </a>
+                                        </td>
+                                        <td>{item.description}</td>
+                                        <td
+                                            style={{
+                                                display: "flex",
+                                                justifyContent: "right",
+                                            }}
+                                        >
+                                            <SourceActions {...item} />
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </Table>
+                    </>
+                ) : (
+                    <Alert
+                        title={"Вы ещё не добавили ни одного источника"}
+                        icon={<IconAlertCircle size="1rem" />}
+                        color={"orange"}
+                        w={"100%"}
+                    >
+                        Подключите их, нажав кнопку ниже.
+                    </Alert>
+                )}
             </Group>
             <Group>
-                <Container>
+                <Flex justify={"center"} gap={"md"} w={"100%"}>
                     <Button
                         onClick={sourcesModalActions.open}
                         variant={"light"}
@@ -69,7 +118,21 @@ export function Sources() {
                     >
                         Добавить новый источник новостей
                     </Button>
-                </Container>
+                    <Tooltip
+                        label={
+                            "Произойдёт опрос всех источников. Это может занять некоторое время"
+                        }
+                    >
+                        <Button
+                            onClick={handleForceParse}
+                            variant={"light"}
+                            leftIcon={<IconRefresh size={"1rem"} />}
+                            color={"orange"}
+                        >
+                            Принудительно обновить
+                        </Button>
+                    </Tooltip>
+                </Flex>
                 <AddSourceModal
                     opened={sourcesModalOpened}
                     onClose={sourcesModalActions.close}

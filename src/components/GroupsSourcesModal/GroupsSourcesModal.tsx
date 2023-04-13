@@ -33,12 +33,12 @@ export function GroupsSourcesModal({ group, ...props }: Props) {
 
     useEffect(() => {
         getSources().then((res) => setSources(res.data));
-    }, []);
+    }, [props.opened]);
 
     useEffect(() => {
-        getGroupSources(group.id).then((res) =>
-            setGroupSources(copySources(res.data, sources))
-        );
+        getGroupSources(group.id)
+            .then((res) => setGroupSources(copySources(res.data, sources)))
+            .catch(() => setGroupSources([]));
     }, [sources]);
 
     useEffect(() => {
@@ -48,7 +48,7 @@ export function GroupsSourcesModal({ group, ...props }: Props) {
                 .map((source) => adaptSource(source)),
             groupSources.map((source) => adaptSource(source)),
         ]);
-    }, [groupSources]);
+    }, [sources, groupSources]);
 
     function copySources(
         groupSources: ISource[],

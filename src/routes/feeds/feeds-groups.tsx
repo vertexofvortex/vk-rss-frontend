@@ -18,6 +18,7 @@ import { getGroupSources } from "../../network/sources";
 import { getPostsBySourceId } from "../../network/posts";
 import { GroupFeed, PostCard } from "../../components";
 import { getGroupPosts } from "../../network/groups";
+import { IconAlertCircle } from "@tabler/icons-react";
 
 export function FeedsGroups() {
     const { data } = useLoaderData() as AxiosResponse<IGroupWithPosts[]>;
@@ -33,6 +34,15 @@ export function FeedsGroups() {
                 {data?.map((group) => (
                     <GroupFeed {...group} key={group.id} />
                 ))}
+                {data.length == 0 && (
+                    <Alert
+                        title={"Вы ещё не подключили ни одной группы"}
+                        icon={<IconAlertCircle size="1rem" />}
+                        color={"orange"}
+                    >
+                        Добавьте хотя бы одну в разделе "Подключенные группы".
+                    </Alert>
+                )}
             </Accordion>
         </Stack>
     );
