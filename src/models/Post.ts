@@ -1,3 +1,5 @@
+import { IGroup } from "./Group";
+
 export type IPost = {
     id: number;
     source_id: number;
@@ -8,3 +10,7 @@ export type IPost = {
     categories: string;
     publish_date: string;
 };
+
+export interface IPostInCart extends IPost {
+    for_group?: IGroup;
+}

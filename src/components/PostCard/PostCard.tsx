@@ -9,12 +9,12 @@ import {
     Text,
 } from "@mantine/core";
 import { IconExternalLink } from "@tabler/icons-react";
-import { IPost } from "../../models/Post";
+import { IPost, IPostInCart } from "../../models/Post";
 import { addPost, removePost } from "../../features/postsCart/postsCartSlice";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { memo } from "react";
 
-export const PostCard = memo((post: IPost) => {
+export const PostCard = memo((post: IPostInCart) => {
     const postsCart = useAppSelector((state) => state.postsCart.posts);
     const dispatch = useAppDispatch();
 
@@ -101,46 +101,6 @@ export const PostCard = memo((post: IPost) => {
                     <IconExternalLink size={20} />
                 </Button>
             </Flex>
-            {/* <Flex gap={"xs"}>
-				{!postsCart.includes(props) ? (
-					<Button
-						variant="light"
-						color="blue"
-						mt="md"
-						radius="md"
-						style={{
-							flexGrow: "1",
-						}}
-						onClick={() => dispatch(add_post(props))}
-					>
-						Добавить в очередь постинга
-					</Button>
-				) : (
-					<Button
-						variant="light"
-						color="red"
-						mt="md"
-						radius="md"
-						style={{
-							flexGrow: "1",
-						}}
-						onClick={() => dispatch(remove_post(props))}
-					>
-						Удалить из очереди
-					</Button>
-				)}
-				<Button
-					variant="light"
-					color="blue"
-					mt="md"
-					radius="md"
-					component="a"
-					href={props.url}
-					target={"_blank"}
-				>
-					<IconExternalLink size={20} />
-				</Button>
-			</Flex> */}
         </Card>
     );
 });

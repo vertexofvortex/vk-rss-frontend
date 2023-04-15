@@ -180,6 +180,9 @@ const router = createBrowserRouter([
             {
                 path: "publish",
                 element: <Publish />,
+                loader: async (): Promise<AxiosResponse<IGroup[]>> => {
+                    return await getGroups();
+                },
             },
             {
                 path: "keys",

@@ -143,7 +143,7 @@ export const GroupFeed = memo((group: IGroupWithPosts) => {
                                 .slice((activePage - 1) * 21, activePage * 21)
                                 .map((post) => (
                                     <Grid.Col key={post.id} span={4}>
-                                        <PostCard {...post} />
+                                        <PostCard {...post} for_group={group} />
                                     </Grid.Col>
                                 ))}
                         </Grid>

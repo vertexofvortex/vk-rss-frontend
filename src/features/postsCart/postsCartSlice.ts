@@ -1,9 +1,10 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { IPost } from "../../models";
+import { IPostInCart } from "../../models/Post";
 
 interface IPostsCart {
     posts: {
-        [id: number]: IPost;
+        [id: number]: IPostInCart;
     };
 }
 
@@ -15,7 +16,7 @@ export const postsCartSlice = createSlice({
     name: "postsCart",
     initialState,
     reducers: {
-        addPost: (state, action: PayloadAction<IPost>) => {
+        addPost: (state, action: PayloadAction<IPostInCart>) => {
             return {
                 ...state,
                 posts: {
@@ -24,7 +25,7 @@ export const postsCartSlice = createSlice({
                 },
             };
         },
-        removePost: (state, action: PayloadAction<IPost>) => {
+        removePost: (state, action: PayloadAction<IPostInCart>) => {
             let newPostsCart = { ...state.posts };
             delete newPostsCart[action.payload.id];
 
