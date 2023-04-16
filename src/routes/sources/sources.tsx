@@ -1,30 +1,13 @@
-import {
-    ActionIcon,
-    Alert,
-    Button,
-    Container,
-    Flex,
-    Group,
-    Menu,
-    Table,
-    Tooltip,
-} from "@mantine/core";
-import {
-    IconAdjustments,
-    IconAlertCircle,
-    IconEdit,
-    IconPlus,
-    IconRefresh,
-    IconTrash,
-} from "@tabler/icons-react";
+import { Alert, Button, Flex, Group, Table, Tooltip } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+import { notifications } from "@mantine/notifications";
+import { IconAlertCircle, IconPlus, IconRefresh } from "@tabler/icons-react";
 import { AxiosResponse } from "axios";
-import { useEffect } from "react";
 import { useLoaderData } from "react-router-dom";
 import { AddSourceModal, SourceActions } from "../../components";
 import { ISource } from "../../models";
-import { useDisclosure } from "@mantine/hooks";
+import axiosInstance from "../../network/axios-instance";
 import { forceParse } from "../../network/parsing";
-import { notifications } from "@mantine/notifications";
 
 export function Sources() {
     const { data } = useLoaderData() as AxiosResponse<ISource[]>;
@@ -50,21 +33,15 @@ export function Sources() {
             <Group mb={"xs"}>
                 {data.length > 0 ? (
                     <>
-                        <Alert
-                            icon={<IconAlertCircle size="1rem" />}
-                            color={"blue"}
-                            w={"100%"}
-                            mb={"xs"}
-                        >
-                            Все добавленные источники будут автоматически
-                            опрашиваться раз в час, а полученные посты
-                            записываться в базу данных. Дубли постов будут
-                            пропускаться.
+                        <Alert icon={<IconAlertCircle size="1rem" />} color={"blue"} w={"100%"} mb={"xs"}>
+                            Все добавленные источники будут автоматически опрашиваться раз в час, а полученные посты
+                            записываться в базу данных. Дубли постов будут пропускаться.
                         </Alert>
                         <Table striped>
                             <thead>
                                 <tr>
                                     <th>ID</th>
+                                    <th></th>
                                     <th>Название</th>
                                     <th>Ссылка на RSS</th>
                                     <th>Описание</th>
@@ -75,12 +52,15 @@ export function Sources() {
                                 {data.map((item) => (
                                     <tr key={item.id}>
                                         <td>{item.id}</td>
+                                        <td>
+                                            <img
+                                                src={`${axiosInstance.getUri()}/source_logo/${item.id}`}
+                                                style={{ maxHeight: 30 }}
+                                            />
+                                        </td>
                                         <td>{item.title}</td>
                                         <td>
-                                            <a
-                                                href={item.rss_url}
-                                                target="_blank"
-                                            >
+                                            <a href={item.rss_url} target="_blank">
                                                 {item.rss_url}
                                             </a>
                                         </td>
@@ -111,18 +91,10 @@ export function Sources() {
             </Group>
             <Group>
                 <Flex justify={"center"} gap={"md"} w={"100%"}>
-                    <Button
-                        onClick={sourcesModalActions.open}
-                        variant={"light"}
-                        leftIcon={<IconPlus size={"1rem"} />}
-                    >
+                    <Button onClick={sourcesModalActions.open} variant={"light"} leftIcon={<IconPlus size={"1rem"} />}>
                         Добавить новый источник новостей
                     </Button>
-                    <Tooltip
-                        label={
-                            "Произойдёт опрос всех источников. Это может занять некоторое время"
-                        }
-                    >
+                    <Tooltip label={"Произойдёт опрос всех источников. Это может занять некоторое время"}>
                         <Button
                             onClick={handleForceParse}
                             variant={"light"}

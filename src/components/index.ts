@@ -12,3 +12,4 @@ export { GroupFeed } from "./GroupFeed/GroupFeed";
 export { GroupsSourcesModal } from "./GroupsSourcesModal/GroupsSourcesModal";
 export { AddSourceModal } from "./AddSourceModal/AddSourceModal";
 export { RemoveSourceModal } from "./RemoveSourceModal/RemoveSourceModal";
+export { PostEditForm } from "./PostEditForm/PostEditForm";
