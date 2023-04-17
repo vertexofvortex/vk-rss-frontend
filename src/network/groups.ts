@@ -1,30 +1,22 @@
 import { AxiosPromise } from "axios";
-import { IGroup, IPost } from "../models";
+import { IGroup } from "../models";
 import { IGroupExternal, IGroupWithPosts } from "../models/Group";
-import axiosInstance from "./axios-instance";
-import { getGroupSources } from "./sources";
-import { getPostsBySourceId } from "./posts";
-import { ISourceWithPosts } from "../models/Source";
 import { IGroupSourceCreate } from "../models/GroupSource";
+import axiosInstance from "./axios-instance";
 
 export async function getGroups(): AxiosPromise<IGroup[]> {
     return axiosInstance.get("/groups");
 }
 
-export async function getVKGroups(
-    usertoken_id: number,
-    passphrase: string
-): AxiosPromise<IGroupExternal[]> {
-    return axiosInstance.get(
-        `/vk_api/groups?usertoken_id=${usertoken_id}&passphrase=${passphrase}`
-    );
+export async function getVKGroups(usertoken_id: number, passphrase: string): AxiosPromise<IGroupExternal[]> {
+    return axiosInstance.get(`/vk_api/groups?usertoken_id=${usertoken_id}&passphrase=${passphrase}`);
 }
 
-export async function createGroup(
-    group_vk_id: number,
-    token_id: number,
-    passphrase: string
-): AxiosPromise<any> {
+export async function getGroupById(group_id: number): AxiosPromise<IGroup> {
+    return axiosInstance.get(`/groups/${group_id}`);
+}
+
+export async function createGroup(group_vk_id: number, token_id: number, passphrase: string): AxiosPromise<any> {
     return axiosInstance.post(`/groups`, {
         vk_id: group_vk_id,
         token_id: token_id,
@@ -32,9 +24,7 @@ export async function createGroup(
     });
 }
 
-export async function getGroupPosts(
-    group_id: number
-): AxiosPromise<IGroupWithPosts[]> {
+export async function getGroupPosts(group_id: number): AxiosPromise<IGroupWithPosts[]> {
     return axiosInstance.get(`/groups/posts/${group_id}`);
 }
 
@@ -46,10 +36,7 @@ export async function attachSourcesToGroup(groupSources: IGroupSourceCreate[]) {
     return axiosInstance.post(`/groups/sources`, groupSources);
 }
 
-export async function detachSourceFromGroup(
-    group_id: number,
-    source_id: number
-) {
+export async function detachSourceFromGroup(group_id: number, source_id: number) {
     return axiosInstance.delete(`/groups/${group_id}/sources/${source_id}`);
 }
 

@@ -21,10 +21,14 @@ import { notifications } from "@mantine/notifications";
 import { IconAlertCircle, IconUpload } from "@tabler/icons-react";
 import axios, { isAxiosError } from "axios";
 import { useEffect, useState } from "react";
-import { IGroup } from "../../models";
-import { IPostInCart } from "../../models/Post";
+import { IGroup, IKey } from "../../models";
+import { IPost, IPostInCart } from "../../models/Post";
 import axiosInstance from "../../network/axios-instance";
+import { getGroupById } from "../../network/groups";
 import { generateImage } from "../../network/image-gen";
+import { getKeyById } from "../../network/keys";
+import { createPost } from "../../network/publish";
+import { InputPassword } from "../InputPassword/InputPassword";
 
 interface Props {
     post: IPostInCart;
@@ -38,8 +42,9 @@ interface FormValues {
     source_url: string;
     image_url: string;
     image_file?: File;
-    for_group?: string;
+    for_group?: number;
     queued_date?: any;
+    passphrase: string;
     snippet: {
         title?: string;
         description?: string;
@@ -50,9 +55,11 @@ interface FormValues {
 }
 
 export function PostEditForm({ post, groups }: Props) {
-    const [opened, { open, close }] = useDisclosure();
+    const [isImgModalOpen, imgModalActions] = useDisclosure();
+    const [isSuccessModalOpen, successModalActions] = useDisclosure();
     const [image, setImage] = useState<string>();
     const [isImageLoading, setImageLoading] = useState<boolean>(false);
+    const [usertoken, setUsertoken] = useState<IKey>();
 
     const form = useForm<FormValues>({
         validate: {
@@ -60,9 +67,10 @@ export function PostEditForm({ post, groups }: Props) {
             description: (v) => (v ? null : "У поста должен быть текст"),
             source_url: (v) =>
                 /^(ftp|http|https):\/\/[^ "]+\.[^ "]+$/.test(v) ? null : "Ссылка должна быть действительной",
-            for_group: (v) => (v && v !== "undefined" ? null : "Укажите, в какую группу опубликовать новость"),
+            for_group: (v) => (v ? null : "Укажите, в какую группу опубликовать новость"),
             queued_date: (v) => (!v || v > new Date() ? null : "Опубликовать новость в прошлое невозможно"),
             image_url: (v) => (v ? null : "Добавьте изображение"),
+            passphrase: (v) => (v ? null : "Вы не указали пароль от ключа"),
         },
     });
 
@@ -74,7 +82,7 @@ export function PostEditForm({ post, groups }: Props) {
             source_url: post.post_url,
             image_url: post.image_url,
             image_file: undefined,
-            for_group: `${post.for_group?.id}`,
+            for_group: post.for_group?.id,
             snippet: {
                 title: undefined,
                 description: undefined,
@@ -84,24 +92,14 @@ export function PostEditForm({ post, groups }: Props) {
         });
     }, [post]);
 
-    function fileToBase64(file: File | undefined | null): Promise<string> {
-        return new Promise((resolve, reject) => {
-            if (!file) {
-                resolve("");
-                return;
-            }
+    useEffect(() => {
+        if (!form.values.for_group) return;
 
-            let reader = new FileReader();
-
-            reader.readAsDataURL(file);
-            reader.onload = () => {
-                resolve(reader.result as string);
-            };
-            reader.onerror = () => {
-                resolve("");
-            };
-        });
-    }
+        getGroupById(form.values.for_group)
+            .then((res) => getKeyById(res.data.token_id))
+            .then((res) => setUsertoken(res.data))
+            .catch((err) => console.log(err));
+    }, [form.values.for_group]);
 
     function adaptGroup(group: IGroup): SelectItem {
         return {
@@ -110,8 +108,43 @@ export function PostEditForm({ post, groups }: Props) {
         };
     }
 
-    function handleSubmit() {
-        console.log(form.values);
+    async function handleSubmit() {
+        if (form.validate().hasErrors) {
+            console.log(form.validate().errors);
+
+            return;
+        }
+
+        try {
+            let image = await axios.get(form.values.image_url, { responseType: "blob" });
+            let logo = await axiosInstance.get(`/source_logo/${post.source_id}`, { responseType: "blob" });
+
+            if (!image || !logo) {
+                notifications.show({
+                    message: "Картинка или логотип не валидные. Замените их.",
+                    color: "red",
+                });
+
+                return;
+            }
+
+            createPost(
+                form.values.title,
+                form.values.description,
+                form.values.source_text,
+                form.values.source_url,
+                image.data,
+                logo.data,
+                usertoken!.id,
+                form.values.passphrase,
+                form.values.for_group!
+            ).then((res) => successModalActions.open());
+        } catch (error) {
+            notifications.show({
+                message: "Произошла ошибка.",
+                color: "red",
+            });
+        }
     }
 
     async function handleLoadImagePreview() {
@@ -134,7 +167,7 @@ export function PostEditForm({ post, groups }: Props) {
             )
                 .then((res) => {
                     setImage(URL.createObjectURL(res.data));
-                    open();
+                    imgModalActions.open();
                 })
                 .catch((err) => {
                     notifications.show({
@@ -196,13 +229,34 @@ export function PostEditForm({ post, groups }: Props) {
                             {...form.getInputProps("source_url")}
                             mb={"md"}
                         />
-                        <Flex align={"start"} gap={"md"}>
+                        <Select
+                            label={"Выберите, в какую группу отправить пост"}
+                            placeholder={"Нажмите, чтобы выбрать..."}
+                            data={groups.map((group) => adaptGroup(group))}
+                            {...form.getInputProps("for_group")}
+                            mb={"md"}
+                        />
+                        <InputPassword
+                            label={
+                                usertoken ? (
+                                    <>
+                                        Введите кодовую фразу для ключа <b>{usertoken.name}</b>
+                                    </>
+                                ) : (
+                                    "Введите кодовую фразу для ключа"
+                                )
+                            }
+                            placeholder={form.values.for_group ? "Ваш пароль" : "Сначала выберите группу"}
+                            {...form.getInputProps("passphrase")}
+                            mb={"md"}
+                            disabled={form.values.for_group ? false : true}
+                        />
+                        <Flex align={"stretch"} gap={"md"} mb={"md"}>
                             <Tooltip
                                 label={"Можете опубликовать сейчас или указать дату и время для отложенного поста"}
                             >
                                 <Button
                                     onClick={() => {
-                                        form.validate();
                                         handleSubmit();
                                     }}
                                 >
@@ -215,12 +269,6 @@ export function PostEditForm({ post, groups }: Props) {
                                 valueFormat={"ddd, DD MMM YYYY, HH:MM"}
                                 {...form.getInputProps("queued_date")}
                                 clearable
-                                style={{ flexGrow: 1 }}
-                            />
-                            <Select
-                                placeholder={"Выберите, в какую группу отправить пост"}
-                                data={groups.map((group) => adaptGroup(group))}
-                                {...form.getInputProps("for_group")}
                                 style={{ flexGrow: 1 }}
                             />
                         </Flex>
@@ -310,14 +358,15 @@ export function PostEditForm({ post, groups }: Props) {
                 </Flex>
             </Form>
             <ImagePreviewModal
-                opened={opened}
-                onClose={close}
+                opened={isImgModalOpen}
+                onClose={imgModalActions.close}
                 centered
                 src={image}
                 size={"xl"}
                 padding={0}
                 withCloseButton={false}
             />
+            <PublishSuccessModal opened={isSuccessModalOpen} onClose={successModalActions.close} post={post} centered />
         </>
     );
 }
@@ -330,6 +379,23 @@ function ImagePreviewModal({ src, ...props }: ImagePreviewModalProps) {
     return (
         <Modal {...props}>
             <img src={src} style={{ width: "100%" }} />
+        </Modal>
+    );
+}
+
+interface PublishSuccessProps extends ModalProps {
+    post: IPost;
+}
+
+function PublishSuccessModal({ post, ...props }: PublishSuccessProps) {
+    return (
+        <Modal {...props} title={"Запись успешно опубликована"}>
+            <Flex gap={"md"}>
+                <Button color={"red"} style={{ flexGrow: 1 }}>
+                    Удалить пост из очереди
+                </Button>
+                <Button style={{ flexGrow: 1 }}>Ничего не делать</Button>
+            </Flex>
         </Modal>
     );
 }
