@@ -69,7 +69,7 @@ export function PostEditForm({ post, groups }: Props) {
             // TODO: валидация остального
             description: (v) => (v ? null : "У поста должен быть текст"),
             source_url: (v) =>
-                /^(ftp|http|https):\/\/[^ "]+\.[^ "]+$/.test(v) ? null : "Ссылка должна быть действительной",
+                /^(http|https):\/\/[^ "]+\.[^ "]+$/.test(v) ? null : "Ссылка должна быть действительной",
             for_group: (v) => (v ? null : "Укажите, в какую группу опубликовать новость"),
             queued_date: (v) => (!v || v > new Date() ? null : "Опубликовать новость в прошлое невозможно"),
             image_url: (v) => (v ? null : "Добавьте изображение"),
@@ -268,7 +268,6 @@ export function PostEditForm({ post, groups }: Props) {
                                     onClick={() => {
                                         handleSubmit();
                                     }}
-                                    loading={isLoading}
                                 >
                                     {form.values.queued_date ? "Отложить" : "Опубликовать"}
                                 </Button>
