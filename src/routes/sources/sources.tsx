@@ -64,7 +64,11 @@ export function Sources() {
                                                 {item.rss_url}
                                             </a>
                                         </td>
-                                        <td>{item.description}</td>
+                                        <td>
+                                            {item.description && item.description != "undefined"
+                                                ? item.description
+                                                : ""}
+                                        </td>
                                         <td
                                             style={{
                                                 display: "flex",
