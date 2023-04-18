@@ -62,6 +62,7 @@ export function PostEditForm({ post, groups }: Props) {
     const [image, setImage] = useState<string>();
     const [isImageLoading, setImageLoading] = useState<boolean>(false);
     const [usertoken, setUsertoken] = useState<IKey>();
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const form = useForm<FormValues>({
         validate: {
@@ -117,6 +118,8 @@ export function PostEditForm({ post, groups }: Props) {
             return;
         }
 
+        setIsLoading(true);
+
         try {
             let image = await axios.get(form.values.image_url, { responseType: "blob" });
             let logo = await axiosInstance.get(`/source_logo/${post.source_id}`, { responseType: "blob" });
@@ -140,12 +143,16 @@ export function PostEditForm({ post, groups }: Props) {
                 usertoken!.id,
                 form.values.passphrase,
                 form.values.for_group!
-            ).then((res) => successModalActions.open());
+            ).then((res) => {
+                successModalActions.open();
+                setIsLoading(false);
+            });
         } catch (error) {
             notifications.show({
                 message: "Произошла ошибка.",
                 color: "red",
             });
+            setIsLoading(false);
         }
     }
 
@@ -261,6 +268,7 @@ export function PostEditForm({ post, groups }: Props) {
                                     onClick={() => {
                                         handleSubmit();
                                     }}
+                                    loading={isLoading}
                                 >
                                     {form.values.queued_date ? "Отложить" : "Опубликовать"}
                                 </Button>
