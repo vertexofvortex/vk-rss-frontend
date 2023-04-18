@@ -3,12 +3,12 @@ import postsCartReducer from "../features/postsCart/postsCartSlice";
 import { loadState } from "./store-persist";
 
 const reducers = combineReducers({
-    postsCart: postsCartReducer,
+  postsCart: postsCartReducer,
 });
 
 export const store = configureStore({
-    reducer: reducers,
-    preloadedState: loadState(),
+  reducer: reducers,
+  preloadedState: loadState(),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
