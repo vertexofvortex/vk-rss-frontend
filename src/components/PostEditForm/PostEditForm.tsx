@@ -21,6 +21,8 @@ import { notifications } from "@mantine/notifications";
 import { IconAlertCircle, IconUpload } from "@tabler/icons-react";
 import axios, { isAxiosError } from "axios";
 import { useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { removePost } from "../../features/postsCart/postsCartSlice";
 import { IGroup, IKey } from "../../models";
 import { IPost, IPostInCart } from "../../models/Post";
 import axiosInstance from "../../network/axios-instance";
@@ -388,13 +390,23 @@ interface PublishSuccessProps extends ModalProps {
 }
 
 function PublishSuccessModal({ post, ...props }: PublishSuccessProps) {
+    const dispatch = useAppDispatch();
+    const postsCart = useAppSelector((state) => state.postsCart);
+
+    function handlePostQueueRemove() {
+        dispatch(removePost(post));
+        props.onClose();
+    }
+
     return (
         <Modal {...props} title={"Запись успешно опубликована"}>
             <Flex gap={"md"}>
-                <Button color={"red"} style={{ flexGrow: 1 }}>
+                <Button color={"red"} style={{ flexGrow: 1 }} onClick={handlePostQueueRemove}>
                     Удалить пост из очереди
                 </Button>
-                <Button style={{ flexGrow: 1 }}>Ничего не делать</Button>
+                <Button style={{ flexGrow: 1 }} onClick={props.onClose}>
+                    Ничего не делать
+                </Button>
             </Flex>
         </Modal>
     );
