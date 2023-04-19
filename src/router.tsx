@@ -4,6 +4,7 @@ import { createBrowserRouter, redirect } from "react-router-dom";
 import { IGroup, IKey, IKeyCreate, ISource } from "./models";
 import { IGroupWithPosts } from "./models/Group";
 import { IPost } from "./models/Post";
+import { login } from "./network/auth";
 import {
   createGroup,
   getAllGroupsPosts,
@@ -22,6 +23,7 @@ import { FeedsAll } from "./routes/feeds/feeds-all";
 import { FeedsGroups } from "./routes/feeds/feeds-groups";
 import { Groups } from "./routes/groups/groups";
 import { Keys } from "./routes/keys/keys";
+import { Login } from "./routes/login/login";
 import { Publish } from "./routes/publish/publish";
 import { Root } from "./routes/root/root";
 import { Sources } from "./routes/sources/sources";
@@ -222,6 +224,15 @@ const router = createBrowserRouter([
         ],
       },
     ],
+  },
+  {
+    path: "/login",
+    element: <Login />,
+    action: async ({ params, request }) => {
+      const fd = await request.formData();
+
+      return login(fd);
+    },
   },
 ]);
 
