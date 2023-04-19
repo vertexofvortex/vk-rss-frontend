@@ -1,4 +1,4 @@
-import { AppShell, Button } from "@mantine/core";
+import { AppShell, Button, Container, Flex } from "@mantine/core";
 import { Form, useForm } from "@mantine/form";
 import { AxiosResponse } from "axios";
 import { useEffect } from "react";
@@ -44,14 +44,21 @@ export function Login() {
 
   return (
     <AppShell header={<AppHeader />} padding={"xl"} bg={"#FCFCFC"}>
-      <Form form={loginForm}>
-        <InputPassword
-          placeholder={"Пароль"}
-          description={"Введите пароль"}
-          {...loginForm.getInputProps("password")}
-        />
-        <Button onClick={handleLogin}>Авторизоваться</Button>
-      </Form>
+      <Flex align={"center"} h={"100%"}>
+        <Container size={"xs"} style={{ flexGrow: 1 }}>
+          <Form form={loginForm}>
+            <InputPassword
+              placeholder={"Пароль"}
+              description={"Введите пароль"}
+              {...loginForm.getInputProps("password")}
+              mb={"md"}
+            />
+            <Button onClick={handleLogin} fullWidth>
+              Авторизоваться
+            </Button>
+          </Form>
+        </Container>
+      </Flex>
     </AppShell>
   );
 }
