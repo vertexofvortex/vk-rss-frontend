@@ -13,7 +13,7 @@ interface FormValues {
 
 export function Login() {
   const submit = useSubmit();
-  const actionData = useActionData() as AxiosResponse;
+  const actionData = useActionData() as AxiosResponse | boolean;
   const auth = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
   const loginForm = useForm<FormValues>({
@@ -24,7 +24,12 @@ export function Login() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!actionData) return;
+    console.log("actionData", actionData);
+
+    if (actionData == undefined || actionData == null) return;
+    if (typeof actionData === "boolean") {
+      return;
+    }
     if (actionData.status != 200) return;
 
     dispatch(set(actionData.data.access_token));
@@ -32,6 +37,8 @@ export function Login() {
   }, [actionData]);
 
   function handleLogin() {
+    if (loginForm.validate().hasErrors) return;
+
     const fd = new FormData();
     fd.append("password", loginForm.values.password);
     fd.append("username", "admin");

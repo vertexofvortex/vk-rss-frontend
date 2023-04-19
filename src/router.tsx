@@ -231,7 +231,15 @@ const router = createBrowserRouter([
     action: async ({ params, request }) => {
       const fd = await request.formData();
 
-      return login(fd);
+      const res = await login(fd);
+
+      if (res.status == 200) {
+        console.log("success", res);
+        return res;
+      } else {
+        console.log("failed", res);
+        return false;
+      }
     },
   },
 ]);

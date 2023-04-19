@@ -18,7 +18,6 @@ axiosInstance.interceptors.request.use((config) => {
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
-    console.log(token);
   }
 
   return config;
@@ -37,7 +36,6 @@ axiosInstance.interceptors.response.use(
 
 export function logout() {
   localStorage.removeItem("redux");
-  console.log("sdfsdafsdafaa");
 
   return redirect("/login");
 }

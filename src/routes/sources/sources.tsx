@@ -47,7 +47,6 @@ export function Sources() {
               <thead>
                 <tr>
                   <th>ID</th>
-                  <th></th>
                   <th>Название</th>
                   <th>Ссылка на RSS</th>
                   <th>Описание</th>
@@ -61,10 +60,14 @@ export function Sources() {
                     <td>
                       <img
                         src={`${axiosInstance.getUri()}/source_logo/${item.id}`}
-                        style={{ maxHeight: 30 }}
+                        style={{
+                          maxHeight: 30,
+                          maxWidth: 30,
+                          marginRight: "1rem",
+                        }}
                       />
+                      {item.title}
                     </td>
-                    <td>{item.title}</td>
                     <td>
                       <a href={item.rss_url} target="_blank">
                         {item.rss_url}
