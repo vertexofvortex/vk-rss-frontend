@@ -102,3 +102,5 @@ export function FeedsAll() {
     </>
   );
 }
+
+export default FeedsAll;

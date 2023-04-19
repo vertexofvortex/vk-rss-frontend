@@ -1,5 +1,6 @@
 import { notifications } from "@mantine/notifications";
 import { AxiosPromise, AxiosResponse, isAxiosError } from "axios";
+import { Suspense, lazy } from "react";
 import { createBrowserRouter, redirect } from "react-router-dom";
 import { IGroup, IKey, IKeyCreate, ISource } from "./models";
 import { IGroupWithPosts } from "./models/Group";
@@ -19,24 +20,48 @@ import {
   editSource,
   getSources,
 } from "./network/sources";
-import { FeedsAll } from "./routes/feeds/feeds-all";
-import { FeedsGroups } from "./routes/feeds/feeds-groups";
-import { Groups } from "./routes/groups/groups";
-import { Keys } from "./routes/keys/keys";
-import { Login } from "./routes/login/login";
-import { Publish } from "./routes/publish/publish";
-import { Root } from "./routes/root/root";
-import { Sources } from "./routes/sources/sources";
+
+const FeedsAll = lazy(() => import("./routes/feeds/feeds-all"));
+const FeedsGroups = lazy(() => import("./routes/feeds/feeds-groups"));
+const Groups = lazy(() => import("./routes/groups/groups"));
+const Keys = lazy(() => import("./routes/keys/keys"));
+const Login = lazy(() => import("./routes/login/login"));
+const Publish = lazy(() => import("./routes/publish/publish"));
+const Root = lazy(() => import("./routes/root/root"));
+const Sources = lazy(() => import("./routes/sources/sources"));
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Root />,
-    errorElement: <Root isError />,
+    element: (
+      <Suspense>
+        <Root />
+      </Suspense>
+    ),
+    errorElement: (
+      <Suspense>
+        <Root isError />
+      </Suspense>
+    ),
+    loader: async () => {
+      try {
+        const token = JSON.parse(localStorage.getItem("redux")!).auth.token;
+
+        return null;
+      } catch (err) {
+        console.log(err);
+
+        return redirect("/login");
+      }
+    },
     children: [
       {
         path: "sources",
-        element: <Sources />,
+        element: (
+          <Suspense>
+            <Sources />
+          </Suspense>
+        ),
         loader: async (): Promise<AxiosResponse<ISource[]>> => {
           return await getSources();
         },
@@ -93,21 +118,33 @@ const router = createBrowserRouter([
       {
         // FIXME: господи помилуй за эти два роута
         path: "feeds/all",
-        element: <FeedsAll />,
+        element: (
+          <Suspense>
+            <FeedsAll />
+          </Suspense>
+        ),
         loader: async (): Promise<AxiosResponse<IPost[]>> => {
           return await getPosts();
         },
       },
       {
         path: "feeds/groups",
-        element: <FeedsGroups />,
+        element: (
+          <Suspense>
+            <FeedsGroups />
+          </Suspense>
+        ),
         loader: async (): Promise<AxiosResponse<IGroupWithPosts[]>> => {
           return await getAllGroupsPosts();
         },
       },
       {
         path: "groups",
-        element: <Groups />,
+        element: (
+          <Suspense>
+            <Groups />
+          </Suspense>
+        ),
         loader: async (): Promise<AxiosResponse<IGroup[]>> => {
           return await getGroups();
         },
@@ -178,14 +215,22 @@ const router = createBrowserRouter([
       },
       {
         path: "publish",
-        element: <Publish />,
+        element: (
+          <Suspense>
+            <Publish />
+          </Suspense>
+        ),
         loader: async (): Promise<AxiosResponse<IGroup[]>> => {
           return await getGroups();
         },
       },
       {
         path: "keys",
-        element: <Keys />,
+        element: (
+          <Suspense>
+            <Keys />
+          </Suspense>
+        ),
         loader: async (): Promise<AxiosResponse<IKey[]>> => {
           return await getKeys();
         },
@@ -227,7 +272,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/login",
-    element: <Login />,
+    element: (
+      <Suspense>
+        <Login />
+      </Suspense>
+    ),
     action: async ({ params, request }) => {
       const fd = await request.formData();
 

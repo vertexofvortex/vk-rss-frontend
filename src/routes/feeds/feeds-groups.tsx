@@ -29,3 +29,5 @@ export function FeedsGroups() {
     </Stack>
   );
 }
+
+export default FeedsGroups;

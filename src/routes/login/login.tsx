@@ -24,8 +24,6 @@ export function Login() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("actionData", actionData);
-
     if (actionData == undefined || actionData == null) return;
     if (typeof actionData === "boolean") {
       return;
@@ -69,3 +67,5 @@ export function Login() {
     </AppShell>
   );
 }
+
+export default Login;

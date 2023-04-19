@@ -73,3 +73,5 @@ export function Groups() {
     </>
   );
 }
+
+export default Groups;

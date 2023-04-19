@@ -45,3 +45,5 @@ export function Root({ isError }: Props) {
     </AppShell>
   );
 }
+
+export default Root;

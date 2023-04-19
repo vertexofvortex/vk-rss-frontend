@@ -100,3 +100,5 @@ export function Publish() {
     </>
   );
 }
+
+export default Publish;

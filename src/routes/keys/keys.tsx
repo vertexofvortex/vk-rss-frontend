@@ -13,7 +13,7 @@ import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { IconAlertCircle, IconPlus } from "@tabler/icons-react";
 import { AxiosResponse } from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   useActionData,
   useFetcher,
@@ -42,20 +42,6 @@ export function Keys() {
       passphrase: (value) => (value ? null : "Это обязательное поле"),
     },
   });
-
-  useEffect(() => {
-    console.log("action data", errors as { error: string });
-  });
-
-  // function submit(key: IKeyCreate) {
-  //     setIsLoading(true);
-  //     createKey(key)
-  //         .then((res) => {
-  //             setIsLoading(false);
-  //             close();
-  //         })
-  //         .catch((err) => setIsLoading(false));
-  // }
 
   return (
     <>
@@ -194,3 +180,5 @@ export function Keys() {
     </>
   );
 }
+
+export default Keys;
