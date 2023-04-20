@@ -7,7 +7,6 @@ export async function createPost(
   source: string,
   source_url: string,
   image: File,
-  logo: File,
   usertoken_id: number,
   passphrase: string,
   group_id: number
@@ -18,7 +17,6 @@ export async function createPost(
   fd.append("source", source);
   fd.append("source_url", source_url);
   fd.append("image", image);
-  fd.append("logo", logo);
   fd.append("usertoken_id", `${usertoken_id}`);
   fd.append("passphrase", passphrase);
   fd.append("group_id", `${group_id}`);

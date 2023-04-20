@@ -19,9 +19,8 @@ import { Form, useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconAlertCircle, IconUpload } from "@tabler/icons-react";
-import axios, { isAxiosError } from "axios";
 import { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { useAppDispatch } from "../../app/hooks";
 import { removePost } from "../../features/postsCart/postsCartSlice";
 import { IGroup, IKey } from "../../models";
 import { IPost, IPostInCart } from "../../models/Post";
@@ -43,7 +42,7 @@ interface FormValues {
   source_text: string;
   source_url: string;
   image_url: string;
-  image_file?: File;
+  image_file: File;
   for_group?: number;
   queued_date?: any;
   passphrase: string;
@@ -66,7 +65,6 @@ export function PostEditForm({ post, groups }: Props) {
 
   const form = useForm<FormValues>({
     validate: {
-      // TODO: валидация остального
       description: (v) => (v ? null : "У поста должен быть текст"),
       source_url: (v) =>
         /^(http|https):\/\/[^ "]+\.[^ "]+$/.test(v)
@@ -78,7 +76,7 @@ export function PostEditForm({ post, groups }: Props) {
         !v || v > new Date()
           ? null
           : "Опубликовать новость в прошлое невозможно",
-      image_url: (v) => (v ? null : "Добавьте изображение"),
+      image_file: (v) => (v ? null : "Загрузите изображение"),
       passphrase: (v) => (v ? null : "Вы не указали пароль от ключа"),
     },
   });
@@ -102,6 +100,17 @@ export function PostEditForm({ post, groups }: Props) {
   }, [post]);
 
   useEffect(() => {
+    if (!form.values.image_file) return;
+
+    form.setFieldValue(
+      "image_url",
+      URL.createObjectURL(form.values.image_file)
+    );
+
+    console.log(form.values);
+  }, [form.values.image_file]);
+
+  useEffect(() => {
     if (!form.values.for_group) return;
 
     getGroupById(form.values.for_group)
@@ -117,108 +126,90 @@ export function PostEditForm({ post, groups }: Props) {
     };
   }
 
-  async function handleSubmit() {
-    if (form.validate().hasErrors) {
-      console.log(form.validate().errors);
+  async function generateSnippet() {
+    console.log(form.values);
 
-      return;
+    // Check if form has image URL or uploaded file
+    if (!form.values.image_url && !form.values.image_file) {
+      throw Error(
+        "У поста должна быть картинка. Если её нет изначально, то загрузите свою"
+      );
     }
 
-    setIsLoading(true);
-
+    // Trying to get the source logo
+    let logo;
     try {
-      let image = await axios.get(form.values.image_url, {
+      logo = await axiosInstance.get(`/source_logo/${post.source_id}`, {
         responseType: "blob",
-      });
-      let logo = await axiosInstance.get(`/source_logo/${post.source_id}`, {
-        responseType: "blob",
-      });
-
-      if (!image || !logo) {
-        notifications.show({
-          message: "Картинка или логотип не валидные. Замените их.",
-          color: "red",
-        });
-
-        return;
-      }
-
-      createPost(
-        form.values.title,
-        form.values.description,
-        form.values.source_text,
-        form.values.source_url,
-        image.data,
-        logo.data,
-        usertoken!.id,
-        form.values.passphrase,
-        form.values.for_group!
-      ).then((res) => {
-        successModalActions.open();
-        setIsLoading(false);
       });
     } catch (error) {
-      notifications.show({
-        message: "Произошла ошибка.",
-        color: "red",
-      });
-      setIsLoading(false);
+      throw Error("Произошла ошибка при получении логотипа источника.");
+    }
+
+    // If uploaded file is provided
+    if (form.values.image_file) {
+      return generateImage(
+        form.values.snippet?.title || form.values.title,
+        form.values.snippet?.description || form.values.description,
+        form.values.snippet?.source_text || form.values.source_text,
+        logo.data,
+        form.values.image_file,
+        null
+      );
+    } else {
+      return generateImage(
+        form.values.snippet?.title || form.values.title,
+        form.values.snippet?.description || form.values.description,
+        form.values.snippet?.source_text || form.values.source_text,
+        logo.data,
+        null,
+        form.values.image_url
+      );
     }
   }
 
   async function handleLoadImagePreview() {
-    //setImageLoading(true);
-
-    if (!form.values.image_url) return;
-
-    try {
-      let image = await axios.get(form.values.image_url, {
-        responseType: "blob",
+    generateSnippet()
+      .then((res) => {
+        setImage(URL.createObjectURL(res.data));
+        imgModalActions.open();
+      })
+      .catch((err) => {
+        notifications.show({
+          message: err?.message,
+          color: "red",
+        });
       });
-      let logo = await axiosInstance.get(`/source_logo/${post.source_id}`, {
-        responseType: "blob",
-      });
+  }
 
-      generateImage(
-        form.values.snippet?.title || form.values.title,
-        form.values.snippet?.description || form.values.description,
-        form.values.snippet?.source_text || form.values.source_text,
-        image.data,
-        logo.data
+  async function handleSubmit() {
+    if (form.validate().hasErrors) return;
+
+    setIsLoading(true);
+
+    generateSnippet()
+      .then((res) =>
+        createPost(
+          form.values.title,
+          form.values.description,
+          form.values.source_text,
+          form.values.source_url,
+          res.data as File,
+          usertoken!.id,
+          form.values.passphrase,
+          form.values.for_group!
+        )
       )
-        .then((res) => {
-          setImage(URL.createObjectURL(res.data));
-          imgModalActions.open();
-        })
-        .catch((err) => {
-          notifications.show({
-            message: `Произошла ошибка`,
-            color: "red",
-          });
-        })
-        .finally(() => setImageLoading(false));
-    } catch (err) {
-      console.log(err);
-
-      if (isAxiosError(err)) {
+      .then((res) => {
+        successModalActions.open();
+        setIsLoading(false);
+      })
+      .catch((err) => {
         notifications.show({
-          message: (
-            <>
-              <Text>
-                Произошла ошибка ({err.name}). Попробуйте заменить картинку
-                поста, вероятно, проблема в ней.
-              </Text>
-            </>
-          ),
+          message: err?.message,
           color: "red",
         });
-      } else {
-        notifications.show({
-          message: `Произошла ошибка`,
-          color: "red",
-        });
-      }
-    }
+      });
   }
 
   return (
@@ -288,6 +279,7 @@ export function PostEditForm({ post, groups }: Props) {
                   onClick={() => {
                     handleSubmit();
                   }}
+                  loading={isLoading}
                 >
                   {form.values.queued_date ? "Отложить" : "Опубликовать"}
                 </Button>
@@ -339,12 +331,6 @@ export function PostEditForm({ post, groups }: Props) {
               placeholder={"Нажмите или перетяните сюда файл"}
               icon={<IconUpload size={"1rem"} />}
               {...form.getInputProps("image_file")}
-              onChange={(file) => {
-                form.setFieldValue(
-                  "image_url",
-                  URL.createObjectURL(file as Blob)
-                );
-              }}
               clearable
               accept={"image/png,image/jpeg"}
               mb={"md"}
@@ -431,7 +417,6 @@ interface PublishSuccessProps extends ModalProps {
 
 function PublishSuccessModal({ post, ...props }: PublishSuccessProps) {
   const dispatch = useAppDispatch();
-  const postsCart = useAppSelector((state) => state.postsCart);
 
   function handlePostQueueRemove() {
     dispatch(removePost(post));
