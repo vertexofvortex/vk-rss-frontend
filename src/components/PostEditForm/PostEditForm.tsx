@@ -14,7 +14,7 @@ import {
   Textarea,
   Tooltip,
 } from "@mantine/core";
-import { DateTimePicker } from "@mantine/dates";
+import { DateTimePicker, DateValue } from "@mantine/dates";
 import { Form, useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
@@ -44,7 +44,7 @@ interface FormValues {
   image_url: string;
   image_file: File;
   for_group?: number;
-  queued_date?: any;
+  queued_date?: DateValue;
   passphrase: string;
   snippet: {
     title?: string;
@@ -76,7 +76,7 @@ export function PostEditForm({ post, groups }: Props) {
         !v || v > new Date()
           ? null
           : "Опубликовать новость в прошлое невозможно",
-      image_file: (v) => (v ? null : "Загрузите изображение"),
+      image_url: (v) => (v ? null : "Прикрепите картинку"),
       passphrase: (v) => (v ? null : "Вы не указали пароль от ключа"),
     },
   });
@@ -98,6 +98,11 @@ export function PostEditForm({ post, groups }: Props) {
       },
     });
   }, [post]);
+
+  // FIXME: TO REMOVE:
+  useEffect(() => {
+    console.log(form.values);
+  }, [form.values]);
 
   useEffect(() => {
     if (!form.values.image_file) return;
@@ -183,7 +188,9 @@ export function PostEditForm({ post, groups }: Props) {
   }
 
   async function handleSubmit() {
-    if (form.validate().hasErrors) return;
+    const validation = form.validate();
+
+    if (validation.hasErrors) return;
 
     setIsLoading(true);
 
@@ -197,7 +204,10 @@ export function PostEditForm({ post, groups }: Props) {
           res.data as File,
           usertoken!.id,
           form.values.passphrase,
-          form.values.for_group!
+          form.values.for_group!,
+          form.values.queued_date
+            ? form.values.queued_date?.getTime() / 1000
+            : null
         )
       )
       .then((res) => {
@@ -209,6 +219,7 @@ export function PostEditForm({ post, groups }: Props) {
           message: err?.message,
           color: "red",
         });
+        setIsLoading(false);
       });
   }
 
@@ -285,8 +296,9 @@ export function PostEditForm({ post, groups }: Props) {
                 </Button>
               </Tooltip>
               <DateTimePicker
-                placeholder={"Введите дату, когда нужно опубликовать пост"}
-                maw={400}
+                placeholder={
+                  "Введите дату публикации или оставьте пустым, чтобы запостить сейчас"
+                }
                 valueFormat={"ddd, DD MMM YYYY, HH:MM"}
                 {...form.getInputProps("queued_date")}
                 clearable

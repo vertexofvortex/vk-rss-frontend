@@ -9,7 +9,8 @@ export async function createPost(
   image: File,
   usertoken_id: number,
   passphrase: string,
-  group_id: number
+  group_id: number,
+  publish_date: number | undefined | null
 ): AxiosPromise<any> {
   const fd = new FormData();
   fd.append("title", title);
@@ -20,6 +21,7 @@ export async function createPost(
   fd.append("usertoken_id", `${usertoken_id}`);
   fd.append("passphrase", passphrase);
   fd.append("group_id", `${group_id}`);
+  publish_date && fd.append("publish_date", `${publish_date}`);
 
   return axiosInstance.post("/vk_api/post", fd, {
     headers: {

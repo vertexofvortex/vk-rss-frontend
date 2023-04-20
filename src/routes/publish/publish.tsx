@@ -1,5 +1,10 @@
 import { ActionIcon, Alert, Flex, Group, Table, Text } from "@mantine/core";
-import { IconAlertCircle, IconTrash } from "@tabler/icons-react";
+import {
+  IconAlertCircle,
+  IconCheck,
+  IconTrash,
+  IconX,
+} from "@tabler/icons-react";
 import { AxiosResponse } from "axios";
 import { useState } from "react";
 import { useLoaderData } from "react-router-dom";
@@ -35,6 +40,7 @@ export function Publish() {
               <thead>
                 <tr>
                   <th>Заголовок</th>
+                  <th>Картинка</th>
                   <th>Группа</th>
                   <th align={"right"} style={{ textAlign: "right" }}>
                     Действия
@@ -52,6 +58,13 @@ export function Publish() {
                     onClick={() => setCurrentPost(post)}
                   >
                     <td>{post.title}</td>
+                    <td>
+                      {post.image_url ? (
+                        <IconCheck size={"1rem"} color={"green"} />
+                      ) : (
+                        <IconX size={"1rem"} color={"tomato"} />
+                      )}
+                    </td>
                     <td>
                       {post.for_group ? (
                         <Flex align={"center"} gap={"sm"}>
