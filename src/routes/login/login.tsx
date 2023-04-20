@@ -1,6 +1,6 @@
 import { AppShell, Button, Container, Flex } from "@mantine/core";
 import { Form, useForm } from "@mantine/form";
-import { AxiosResponse } from "axios";
+import { AxiosError, AxiosResponse, isAxiosError } from "axios";
 import { useEffect } from "react";
 import { useActionData, useNavigate, useSubmit } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
@@ -13,7 +13,7 @@ interface FormValues {
 
 export function Login() {
   const submit = useSubmit();
-  const actionData = useActionData() as AxiosResponse | boolean;
+  const actionData = useActionData() as AxiosResponse | AxiosError;
   const auth = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
   const loginForm = useForm<FormValues>({
@@ -24,14 +24,18 @@ export function Login() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (actionData == undefined || actionData == null) return;
-    if (typeof actionData === "boolean") {
+    if (!actionData) return;
+
+    if (isAxiosError(actionData)) {
+      loginForm.setFieldError("password", "Неверный пароль");
+
       return;
     }
-    if (actionData.status != 200) return;
 
     dispatch(set(actionData.data.access_token));
-    navigate("/");
+    navigate("/sources");
+
+    console.log(actionData);
   }, [actionData]);
 
   function handleLogin() {

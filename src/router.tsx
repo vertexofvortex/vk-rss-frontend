@@ -1,7 +1,7 @@
 import { notifications } from "@mantine/notifications";
 import { AxiosPromise, AxiosResponse, isAxiosError } from "axios";
 import { Suspense, lazy } from "react";
-import { createBrowserRouter, redirect } from "react-router-dom";
+import { Navigate, createBrowserRouter, redirect } from "react-router-dom";
 import { IGroup, IKey, IKeyCreate, ISource } from "./models";
 import { IGroupWithPosts } from "./models/Group";
 import { IPost } from "./models/Post";
@@ -55,6 +55,11 @@ const router = createBrowserRouter([
       }
     },
     children: [
+      {
+        path: "",
+        index: true,
+        element: <Navigate to="/sources" />,
+      },
       {
         path: "sources",
         element: (
@@ -279,16 +284,15 @@ const router = createBrowserRouter([
     ),
     action: async ({ params, request }) => {
       const fd = await request.formData();
+      let response;
 
-      const res = await login(fd);
-
-      if (res.status == 200) {
-        console.log("success", res);
-        return res;
-      } else {
-        console.log("failed", res);
-        return false;
+      try {
+        response = await login(fd);
+      } catch (error) {
+        if (isAxiosError(error)) return error;
       }
+
+      return response;
     },
   },
 ]);

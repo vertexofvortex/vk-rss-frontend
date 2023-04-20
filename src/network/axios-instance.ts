@@ -26,11 +26,9 @@ axiosInstance.interceptors.request.use((config) => {
 axiosInstance.interceptors.response.use(
   (value) => value,
   (error) => {
-    if (error.response.status === 401) {
-      return logout();
-    } else {
-      throw error;
-    }
+    if (error.response.status === 401) logout();
+
+    throw error;
   }
 );
 
