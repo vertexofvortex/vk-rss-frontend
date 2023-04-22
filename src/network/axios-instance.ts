@@ -26,7 +26,16 @@ axiosInstance.interceptors.request.use((config) => {
 axiosInstance.interceptors.response.use(
   (value) => value,
   (error) => {
-    if (error.response.status === 401) logout();
+    console.log("from interceptor:", error);
+
+    if (
+      error.response.status === 401 &&
+      error.response.config.url != "/auth/login"
+    ) {
+      console.log("executing logout");
+
+      return logout();
+    }
 
     throw error;
   }

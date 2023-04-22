@@ -1,7 +1,7 @@
 import { notifications } from "@mantine/notifications";
 import { AxiosPromise, AxiosResponse, isAxiosError } from "axios";
 import { Suspense, lazy } from "react";
-import { createBrowserRouter, redirect } from "react-router-dom";
+import { Navigate, createBrowserRouter, redirect } from "react-router-dom";
 import { IGroup, IKey, IKeyCreate, ISource } from "./models";
 import { IGroupWithPosts } from "./models/Group";
 import { IPost } from "./models/Post";
@@ -47,7 +47,7 @@ const router = createBrowserRouter([
     //   try {
     //     const token = JSON.parse(localStorage.getItem("redux")!).auth.token;
 
-    //     return null;
+    //     return token ? null : redirect("/login");
     //   } catch (err) {
     //     console.log(err);
 
@@ -55,11 +55,11 @@ const router = createBrowserRouter([
     //   }
     // },
     children: [
-      // {
-      //   path: "",
-      //   index: true,
-      //   element: <Navigate to="/sources" />,
-      // },
+      {
+        path: "",
+        index: true,
+        element: <Navigate to="/sources" />,
+      },
       {
         path: "login",
         element: (
@@ -74,7 +74,7 @@ const router = createBrowserRouter([
           try {
             response = await login(fd);
           } catch (error) {
-            return null;
+            return error;
           }
 
           return response;

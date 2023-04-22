@@ -1,6 +1,6 @@
 import { Button } from "@mantine/core";
 import { Form, useForm } from "@mantine/form";
-import { AxiosResponse } from "axios";
+import { AxiosError, AxiosResponse } from "axios";
 import { useEffect } from "react";
 import { useActionData, useNavigate, useSubmit } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
@@ -48,6 +48,11 @@ export function Login() {
 
     //   return;
     // }
+    if (actionData instanceof AxiosError) {
+      loginForm.setFieldError("password", "Неверный пароль");
+
+      return;
+    }
 
     dispatch(set(actionData.data.access_token));
     navigate("/");

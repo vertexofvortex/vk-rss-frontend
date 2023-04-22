@@ -1,6 +1,6 @@
 import { ActionIcon, Menu } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { IconAdjustments, IconEdit, IconTrash } from "@tabler/icons-react";
+import { IconAdjustments, IconTrash } from "@tabler/icons-react";
 import { ISource } from "../../models";
 import { RemoveSourceModal } from "../RemoveSourceModal/RemoveSourceModal";
 
@@ -17,7 +17,7 @@ export function SourceActions(source: ISource) {
         </Menu.Target>
         <Menu.Dropdown>
           <Menu.Label>Действия</Menu.Label>
-          <Menu.Item icon={<IconEdit size={14} />}>Редактировать</Menu.Item>
+          {/* <Menu.Item icon={<IconEdit size={14} />}>Редактировать</Menu.Item> */}
           <Menu.Item
             icon={<IconTrash size={14} />}
             color={"red"}
