@@ -20,7 +20,15 @@ export function AppNavbar() {
   );
 }
 
-export function AppNavbarContent() {
+interface Props {
+  drawerActions?: {
+    readonly open: () => void;
+    readonly close: () => void;
+    readonly toggle: () => void;
+  };
+}
+
+export function AppNavbarContent({ drawerActions }: Props) {
   const postsCart = useAppSelector((state) => state.postsCart.posts);
 
   return (
@@ -42,6 +50,7 @@ export function AppNavbarContent() {
               }
               rightSection={<IconChevronRight size={20} />}
               active={isActive}
+              onClick={drawerActions && drawerActions.close}
             />
           )}
         </RouterLink>
@@ -64,6 +73,7 @@ export function AppNavbarContent() {
                 }
                 rightSection={<IconChevronRight size={20} />}
                 active={isActive}
+                onClick={drawerActions && drawerActions.close}
               />
             )}
           </RouterLink>
@@ -80,6 +90,7 @@ export function AppNavbarContent() {
                 }
                 rightSection={<IconChevronRight size={20} />}
                 active={isActive}
+                onClick={drawerActions && drawerActions.close}
               />
             )}
           </RouterLink>
@@ -94,6 +105,7 @@ export function AppNavbarContent() {
               }
               rightSection={<IconChevronRight size={20} />}
               active={isActive}
+              onClick={drawerActions && drawerActions.close}
             />
           )}
         </RouterLink>
@@ -105,6 +117,7 @@ export function AppNavbarContent() {
               description={"Управление подключенными ключами доступа"}
               rightSection={<IconChevronRight size={20} />}
               active={isActive}
+              onClick={drawerActions && drawerActions.close}
             />
           )}
         </RouterLink>
@@ -133,6 +146,7 @@ export function AppNavbarContent() {
               description={"Опубликуйте выбранные новости на стене сообщества"}
               rightSection={<IconChevronRight size={20} />}
               active={isActive}
+              onClick={drawerActions && drawerActions.close}
             />
           )}
         </RouterLink>

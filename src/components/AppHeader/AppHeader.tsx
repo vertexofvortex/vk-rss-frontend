@@ -1,4 +1,5 @@
 import { ActionIcon, Flex, Group, Header, Title } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 import { IconLogout, IconMenu2 } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
@@ -17,6 +18,7 @@ export function AppHeader({ isDrawerOpened, drawerActions }: Props) {
   const auth = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const mobileWidth = useMediaQuery("(max-width: 851px)");
 
   function handleLogout() {
     dispatch(clear());
@@ -42,15 +44,17 @@ export function AppHeader({ isDrawerOpened, drawerActions }: Props) {
               <IconLogout size={"1rem"} />
             </ActionIcon>
           )}
-          <ActionIcon
-            variant={"subtle"}
-            color={"blue"}
-            h={"40px"}
-            w={"40px"}
-            onClick={drawerActions.toggle}
-          >
-            <IconMenu2 size={"1rem"} />
-          </ActionIcon>
+          {mobileWidth && (
+            <ActionIcon
+              variant={"subtle"}
+              color={"blue"}
+              h={"40px"}
+              w={"40px"}
+              onClick={drawerActions.toggle}
+            >
+              <IconMenu2 size={"1rem"} />
+            </ActionIcon>
+          )}
         </Group>
       </Flex>
     </Header>

@@ -16,7 +16,7 @@ import {
 } from "@mantine/core";
 import { DateTimePicker, DateValue } from "@mantine/dates";
 import { Form, useForm } from "@mantine/form";
-import { useDisclosure } from "@mantine/hooks";
+import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconAlertCircle, IconUpload } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
@@ -62,6 +62,7 @@ export function PostEditForm({ post, groups }: Props) {
   const [isImageLoading, setImageLoading] = useState<boolean>(false);
   const [usertoken, setUsertoken] = useState<IKey>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const mobileWidth = useMediaQuery("(max-width: 851px)");
 
   const form = useForm<FormValues>({
     validate: {
@@ -226,7 +227,7 @@ export function PostEditForm({ post, groups }: Props) {
   return (
     <>
       <Form form={form} style={{ minHeight: 500 }}>
-        <Flex gap={"md"}>
+        <Flex gap={"md"} direction={mobileWidth ? "column" : "row"}>
           <div style={{ flexGrow: 1 }}>
             <TextInput
               label={"Заголовок поста"}
@@ -280,7 +281,12 @@ export function PostEditForm({ post, groups }: Props) {
               mb={"md"}
               disabled={form.values.for_group ? false : true}
             />
-            <Flex align={"stretch"} gap={"md"} mb={"md"}>
+            <Flex
+              align={"stretch"}
+              gap={"md"}
+              mb={"md"}
+              direction={mobileWidth ? "column-reverse" : "row"}
+            >
               <Tooltip
                 label={
                   "Можете опубликовать сейчас или указать дату и время для отложенного поста"
@@ -313,8 +319,8 @@ export function PostEditForm({ post, groups }: Props) {
             {form.values.image_url && (
               <Image
                 src={form.values.image_url}
-                miw={500}
-                maw={500}
+                miw={mobileWidth ? "100%" : 500}
+                maw={mobileWidth ? "100%" : 500}
                 height={300}
                 radius={"md"}
                 mb={"md"}
@@ -323,8 +329,8 @@ export function PostEditForm({ post, groups }: Props) {
             {!form.values.image_url && (
               <div
                 style={{
-                  minWidth: 500,
-                  maxWidth: 500,
+                  minWidth: mobileWidth ? "100%" : 500,
+                  maxWidth: mobileWidth ? "100%" : 500,
                 }}
               >
                 <Alert

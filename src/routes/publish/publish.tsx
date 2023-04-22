@@ -1,4 +1,5 @@
 import { ActionIcon, Alert, Flex, Group, Table, Text } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 import {
   IconAlertCircle,
   IconCheck,
@@ -21,6 +22,7 @@ export function Publish() {
   const [currentPost, setCurrentPost] = useState<IPostInCart>(
     Object.values(postsCart.posts)[0]
   );
+  const mobileWidth = useMediaQuery("(max-width: 851px)");
 
   return (
     <>
@@ -36,68 +38,76 @@ export function Publish() {
             }}
           >
             <Text>Очередь постов</Text>
-            <Table striped>
-              <thead>
-                <tr>
-                  <th>Заголовок</th>
-                  <th>Картинка</th>
-                  <th>Группа</th>
-                  <th align={"right"} style={{ textAlign: "right" }}>
-                    Действия
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {Object.values(postsCart.posts).map((post) => (
-                  <tr
-                    key={post.id}
-                    style={{
-                      background: post.id == currentPost?.id ? "#0000001b" : "",
-                      cursor: "pointer",
-                    }}
-                    onClick={() => setCurrentPost(post)}
-                  >
-                    <td>{post.title}</td>
-                    <td>
-                      {post.image_url ? (
-                        <IconCheck size={"1rem"} color={"green"} />
-                      ) : (
-                        <IconX size={"1rem"} color={"tomato"} />
-                      )}
-                    </td>
-                    <td>
-                      {post.for_group ? (
-                        <Flex align={"center"} gap={"sm"}>
-                          <img
-                            src={post.for_group?.photo_url}
-                            style={{
-                              width: "25px",
-                              borderRadius: "25px",
-                            }}
-                          />
-                          {post.for_group?.name}
-                        </Flex>
-                      ) : (
-                        <div>Из общей ленты</div>
-                      )}
-                    </td>
-                    <td align={"right"}>
-                      <ActionIcon
-                        color={"red"}
-                        onClick={() => {
-                          dispatch(removePost(post));
-                          // if (currentPost?.id == post.id) {
-                          //     setCurrentPost(undefined);
-                          // }
-                        }}
-                      >
-                        <IconTrash size={"1rem"} />
-                      </ActionIcon>
-                    </td>
+            <div
+              style={{
+                width: "100%",
+                overflowX: "scroll",
+              }}
+            >
+              <Table striped>
+                <thead>
+                  <tr>
+                    <th>Заголовок</th>
+                    <th>Картинка</th>
+                    <th>Группа</th>
+                    <th align={"right"} style={{ textAlign: "right" }}>
+                      Действия
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </Table>
+                </thead>
+                <tbody>
+                  {Object.values(postsCart.posts).map((post) => (
+                    <tr
+                      key={post.id}
+                      style={{
+                        background:
+                          post.id == currentPost?.id ? "#0000001b" : "",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => setCurrentPost(post)}
+                    >
+                      <td>{post.title}</td>
+                      <td>
+                        {post.image_url ? (
+                          <IconCheck size={"1rem"} color={"green"} />
+                        ) : (
+                          <IconX size={"1rem"} color={"tomato"} />
+                        )}
+                      </td>
+                      <td>
+                        {post.for_group ? (
+                          <Flex align={"center"} gap={"sm"}>
+                            <img
+                              src={post.for_group?.photo_url}
+                              style={{
+                                width: "25px",
+                                borderRadius: "25px",
+                              }}
+                            />
+                            {post.for_group?.name}
+                          </Flex>
+                        ) : (
+                          <div>Из общей ленты</div>
+                        )}
+                      </td>
+                      <td align={"right"}>
+                        <ActionIcon
+                          color={"red"}
+                          onClick={() => {
+                            dispatch(removePost(post));
+                            // if (currentPost?.id == post.id) {
+                            //     setCurrentPost(undefined);
+                            // }
+                          }}
+                        >
+                          <IconTrash size={"1rem"} />
+                        </ActionIcon>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </div>
           </Group>
         </>
       ) : (

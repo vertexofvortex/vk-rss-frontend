@@ -52,7 +52,7 @@ export function Root({ isError }: Props) {
         </Group>
       )}
       <Drawer opened={isDrawerOpened} onClose={drawerActions.close}>
-        <AppNavbarContent />
+        <AppNavbarContent drawerActions={drawerActions} />
       </Drawer>
     </AppShell>
   );
