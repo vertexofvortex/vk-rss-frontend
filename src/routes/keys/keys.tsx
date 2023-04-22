@@ -46,31 +46,38 @@ export function Keys() {
   return (
     <>
       <Group mb={"xs"}>
-        <Table striped>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Наименование ключа</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((token) => (
-              <tr key={token.id}>
-                <td>{token.id}</td>
-                <td>{token.name}</td>
-                <td
-                  style={{
-                    display: "flex",
-                    justifyContent: "right",
-                  }}
-                >
-                  <KeyActions token={token} />
-                </td>
+        <div
+          style={{
+            width: "100%",
+            overflowX: "scroll",
+          }}
+        >
+          <Table striped>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Наименование ключа</th>
+                <th></th>
               </tr>
-            ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              {data.map((token) => (
+                <tr key={token.id}>
+                  <td>{token.id}</td>
+                  <td>{token.name}</td>
+                  <td
+                    style={{
+                      display: "flex",
+                      justifyContent: "right",
+                    }}
+                  >
+                    <KeyActions token={token} />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </div>
       </Group>
       <Group>
         <Container>

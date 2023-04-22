@@ -10,6 +10,7 @@ import {
   Text,
   UnstyledButton,
 } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 import { memo, useState } from "react";
 import { IGroupWithPosts } from "../../models/Group";
 import { PostCard } from "../PostCard/PostCard";
@@ -17,6 +18,7 @@ import { PostCard } from "../PostCard/PostCard";
 export const GroupFeed = memo((group: IGroupWithPosts) => {
   const [activePage, setActivePage] = useState<number>(1);
   const [activeCategory, setActiveCategory] = useState<string>();
+  const mobileWidth = useMediaQuery("(max-width: 851px)");
 
   function parseCategories(): Set<string> {
     return new Set(
@@ -122,7 +124,7 @@ export const GroupFeed = memo((group: IGroupWithPosts) => {
                 )
                 .slice((activePage - 1) * 21, activePage * 21)
                 .map((post) => (
-                  <Grid.Col key={post.id} span={4}>
+                  <Grid.Col key={post.id} span={mobileWidth ? 12 : 4}>
                     <PostCard {...post} for_group={group} />
                   </Grid.Col>
                 ))}

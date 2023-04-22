@@ -6,6 +6,7 @@ import {
   Pagination,
   UnstyledButton,
 } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 import { AxiosResponse } from "axios";
 import { useState } from "react";
 import { useLoaderData } from "react-router-dom";
@@ -16,6 +17,7 @@ export function FeedsAll() {
   const { data } = useLoaderData() as AxiosResponse<IPost[]>;
   const [activePage, setActivePage] = useState<number>(1);
   const [activeCategory, setActiveCategory] = useState<string>();
+  const mobileWidth = useMediaQuery("(max-width: 851px)");
 
   function parseCategories(): Set<string> {
     return new Set(
@@ -74,14 +76,14 @@ export function FeedsAll() {
         mb={"md"}
         grow
       />
-      <Grid>
+      <Grid mb={"md"}>
         {data
           .filter((value) =>
             activeCategory ? value.categories == activeCategory : value
           )
           .slice((activePage - 1) * 36, activePage * 36)
           .map((item) => (
-            <Grid.Col key={item.id} span={4}>
+            <Grid.Col key={item.id} span={mobileWidth ? 12 : 4}>
               <PostCard {...item} />
             </Grid.Col>
           ))}

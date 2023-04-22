@@ -2,7 +2,7 @@ import axios from "axios";
 import { redirect } from "react-router-dom";
 
 export const axiosInstance = axios.create({
-  baseURL: "http://localhost:8000",
+  baseURL: "http://192.168.0.50:8000",
 });
 
 axiosInstance.interceptors.request.use((config) => {

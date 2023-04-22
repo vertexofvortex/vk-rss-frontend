@@ -7,7 +7,7 @@ import {
   Text,
   UnstyledButton,
 } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
+import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { AxiosResponse } from "axios";
 import { useLoaderData } from "react-router-dom";
 import { AddGroupsModal, GroupActions } from "../../components";
@@ -16,12 +16,13 @@ import { IGroup } from "../../models";
 export function Groups() {
   const { data } = useLoaderData() as AxiosResponse<IGroup[]>;
   const [opened, { open, close }] = useDisclosure(false);
+  const mobileWidth = useMediaQuery("(max-width: 851px)");
 
   return (
     <>
       <Grid>
         {data.map((group) => (
-          <Grid.Col key={group.id} span={4}>
+          <Grid.Col key={group.id} span={mobileWidth ? 12 : 4}>
             <Card shadow="sm" padding="xs" radius="md" withBorder>
               <Flex justify={"space-between"} align={"center"}>
                 <Group>
@@ -42,7 +43,7 @@ export function Groups() {
             </Card>
           </Grid.Col>
         ))}
-        <Grid.Col span={4}>
+        <Grid.Col span={mobileWidth ? 12 : 4}>
           <UnstyledButton onClick={() => open()} w={"100%"}>
             <Card
               padding="xs"

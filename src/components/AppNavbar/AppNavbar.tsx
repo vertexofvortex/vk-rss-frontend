@@ -13,10 +13,18 @@ import styles from "./AppNavbar.module.scss";
 
 // TODO: loaders for all links (мб их декомпозировать?)
 export function AppNavbar() {
+  return (
+    <Navbar width={{ base: 300 }}>
+      <AppNavbarContent />
+    </Navbar>
+  );
+}
+
+export function AppNavbarContent() {
   const postsCart = useAppSelector((state) => state.postsCart.posts);
 
   return (
-    <Navbar width={{ base: 300 }}>
+    <>
       <Navbar.Section grow>
         <RouterLink to={"/sources"} className={styles.link}>
           {({ isActive, isPending }) => (
@@ -129,6 +137,6 @@ export function AppNavbar() {
           )}
         </RouterLink>
       </Navbar.Section>
-    </Navbar>
+    </>
   );
 }

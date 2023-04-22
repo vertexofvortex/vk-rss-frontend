@@ -43,53 +43,62 @@ export function Sources() {
               15 минут, а полученные посты записываться в базу данных. Дубли
               постов будут пропускаться.
             </Alert>
-            <Table striped>
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Название</th>
-                  <th>Ссылка на RSS</th>
-                  <th>Описание</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.map((item) => (
-                  <tr key={item.id}>
-                    <td>{item.id}</td>
-                    <td>
-                      <img
-                        src={`${axiosInstance.getUri()}/source_logo/${item.id}`}
-                        style={{
-                          maxHeight: 30,
-                          maxWidth: 30,
-                          marginRight: "1rem",
-                        }}
-                      />
-                      {item.title}
-                    </td>
-                    <td>
-                      <a href={item.rss_url} target="_blank">
-                        {item.rss_url}
-                      </a>
-                    </td>
-                    <td>
-                      {item.description && item.description != "undefined"
-                        ? item.description
-                        : ""}
-                    </td>
-                    <td
-                      style={{
-                        display: "flex",
-                        justifyContent: "right",
-                      }}
-                    >
-                      <SourceActions {...item} />
-                    </td>
+            <div
+              style={{
+                width: "100%",
+                overflowX: "scroll",
+              }}
+            >
+              <Table striped>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Название</th>
+                    <th>Ссылка на RSS</th>
+                    <th>Описание</th>
+                    <th></th>
                   </tr>
-                ))}
-              </tbody>
-            </Table>
+                </thead>
+                <tbody>
+                  {data.map((item) => (
+                    <tr key={item.id}>
+                      <td>{item.id}</td>
+                      <td>
+                        <img
+                          src={`${axiosInstance.getUri()}/source_logo/${
+                            item.id
+                          }`}
+                          style={{
+                            maxHeight: 30,
+                            maxWidth: 30,
+                            marginRight: "1rem",
+                          }}
+                        />
+                        {item.title}
+                      </td>
+                      <td>
+                        <a href={item.rss_url} target="_blank">
+                          {item.rss_url}
+                        </a>
+                      </td>
+                      <td>
+                        {item.description && item.description != "undefined"
+                          ? item.description
+                          : ""}
+                      </td>
+                      <td
+                        style={{
+                          display: "flex",
+                          justifyContent: "right",
+                        }}
+                      >
+                        <SourceActions {...item} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </div>
           </>
         ) : (
           <Alert
@@ -103,11 +112,12 @@ export function Sources() {
         )}
       </Group>
       <Group>
-        <Flex justify={"center"} gap={"md"} w={"100%"}>
+        <Flex justify={"center"} gap={"md"} w={"100%"} wrap={"wrap"}>
           <Button
             onClick={sourcesModalActions.open}
             variant={"light"}
             leftIcon={<IconPlus size={"1rem"} />}
+            style={{ flexGrow: 1 }}
           >
             Добавить новый источник новостей
           </Button>
@@ -121,6 +131,7 @@ export function Sources() {
               variant={"light"}
               leftIcon={<IconRefresh size={"1rem"} />}
               color={"orange"}
+              style={{ flexGrow: 1 }}
             >
               Принудительно обновить
             </Button>

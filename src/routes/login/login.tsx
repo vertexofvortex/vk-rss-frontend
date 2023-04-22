@@ -1,10 +1,10 @@
-import { AppShell, Button, Container, Flex } from "@mantine/core";
+import { Button } from "@mantine/core";
 import { Form, useForm } from "@mantine/form";
-import { AxiosError, AxiosResponse, isAxiosError } from "axios";
+import { AxiosResponse } from "axios";
 import { useEffect } from "react";
 import { useActionData, useNavigate, useSubmit } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { AppHeader, InputPassword } from "../../components";
+import { InputPassword } from "../../components";
 import { set } from "../../features/authSlice/authSlice";
 
 interface FormValues {
@@ -13,7 +13,7 @@ interface FormValues {
 
 export function Login() {
   const submit = useSubmit();
-  const actionData = useActionData() as AxiosResponse | AxiosError;
+  const actionData = useActionData() as AxiosResponse | null;
   const auth = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
   const loginForm = useForm<FormValues>({
@@ -23,19 +23,34 @@ export function Login() {
   });
   const navigate = useNavigate();
 
+  // useEffect(() => {
+  //   if (!actionData) return;
+
+  //   if (isAxiosError(actionData)) {
+  //     loginForm.setFieldError("password", "Неверный пароль");
+
+  //     return;
+  //   }
+
+  //   dispatch(set(actionData.data.access_token));
+  //   navigate("/");
+
+  //   console.log(actionData);
+  // }, [actionData]);
+
   useEffect(() => {
+    console.log("actionData", actionData);
+
     if (!actionData) return;
 
-    if (isAxiosError(actionData)) {
-      loginForm.setFieldError("password", "Неверный пароль");
+    // if (isAxiosError(actionData)) {
+    //   loginForm.setFieldError("password", "Неверный пароль");
 
-      return;
-    }
+    //   return;
+    // }
 
     dispatch(set(actionData.data.access_token));
-    navigate("/sources");
-
-    console.log(actionData);
+    navigate("/");
   }, [actionData]);
 
   function handleLogin() {
@@ -51,24 +66,37 @@ export function Login() {
     });
   }
 
+  // return (
+  //   <AppShell header={<AppHeader />} padding={"xl"} bg={"#FCFCFC"}>
+  //     <Flex align={"center"} h={"100%"}>
+  //       <Container size={"xs"} style={{ flexGrow: 1 }}>
+  //         <Form form={loginForm}>
+  //           <InputPassword
+  //             placeholder={"Пароль"}
+  //             description={"Введите пароль"}
+  //             {...loginForm.getInputProps("password")}
+  //             mb={"md"}
+  //           />
+  //           <Button onClick={handleLogin} fullWidth>
+  //             Авторизоваться
+  //           </Button>
+  //         </Form>
+  //       </Container>
+  //     </Flex>
+  //   </AppShell>
+  // );
   return (
-    <AppShell header={<AppHeader />} padding={"xl"} bg={"#FCFCFC"}>
-      <Flex align={"center"} h={"100%"}>
-        <Container size={"xs"} style={{ flexGrow: 1 }}>
-          <Form form={loginForm}>
-            <InputPassword
-              placeholder={"Пароль"}
-              description={"Введите пароль"}
-              {...loginForm.getInputProps("password")}
-              mb={"md"}
-            />
-            <Button onClick={handleLogin} fullWidth>
-              Авторизоваться
-            </Button>
-          </Form>
-        </Container>
-      </Flex>
-    </AppShell>
+    <Form form={loginForm}>
+      <InputPassword
+        placeholder={"Пароль"}
+        description={"Введите пароль"}
+        {...loginForm.getInputProps("password")}
+        mb={"md"}
+      />
+      <Button onClick={handleLogin} fullWidth>
+        Авторизоваться
+      </Button>
+    </Form>
   );
 }
 

@@ -1,7 +1,7 @@
 import { notifications } from "@mantine/notifications";
 import { AxiosPromise, AxiosResponse, isAxiosError } from "axios";
 import { Suspense, lazy } from "react";
-import { Navigate, createBrowserRouter, redirect } from "react-router-dom";
+import { createBrowserRouter, redirect } from "react-router-dom";
 import { IGroup, IKey, IKeyCreate, ISource } from "./models";
 import { IGroupWithPosts } from "./models/Group";
 import { IPost } from "./models/Post";
@@ -43,22 +43,42 @@ const router = createBrowserRouter([
         <Root isError />
       </Suspense>
     ),
-    loader: async () => {
-      try {
-        const token = JSON.parse(localStorage.getItem("redux")!).auth.token;
+    // loader: async () => {
+    //   try {
+    //     const token = JSON.parse(localStorage.getItem("redux")!).auth.token;
 
-        return null;
-      } catch (err) {
-        console.log(err);
+    //     return null;
+    //   } catch (err) {
+    //     console.log(err);
 
-        return redirect("/login");
-      }
-    },
+    //     return redirect("/login");
+    //   }
+    // },
     children: [
+      // {
+      //   path: "",
+      //   index: true,
+      //   element: <Navigate to="/sources" />,
+      // },
       {
-        path: "",
-        index: true,
-        element: <Navigate to="/sources" />,
+        path: "login",
+        element: (
+          <Suspense>
+            <Login />
+          </Suspense>
+        ),
+        action: async ({ params, request }) => {
+          const fd = await request.formData();
+          let response;
+
+          try {
+            response = await login(fd);
+          } catch (error) {
+            return null;
+          }
+
+          return response;
+        },
       },
       {
         path: "sources",
@@ -275,26 +295,26 @@ const router = createBrowserRouter([
       },
     ],
   },
-  {
-    path: "/login",
-    element: (
-      <Suspense>
-        <Login />
-      </Suspense>
-    ),
-    action: async ({ params, request }) => {
-      const fd = await request.formData();
-      let response;
+  // {
+  //   path: "/login",
+  //   element: (
+  //     <Suspense>
+  //       <Login />
+  //     </Suspense>
+  //   ),
+  //   action: async ({ params, request }) => {
+  //     const fd = await request.formData();
+  //     let response;
 
-      try {
-        response = await login(fd);
-      } catch (error) {
-        if (isAxiosError(error)) return error;
-      }
+  //     try {
+  //       response = await login(fd);
+  //     } catch (error) {
+  //       if (isAxiosError(error)) return error;
+  //     }
 
-      return response;
-    },
-  },
+  //     return response;
+  //   },
+  // },
 ]);
 
 export default router;
