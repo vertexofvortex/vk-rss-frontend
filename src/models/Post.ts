@@ -8,7 +8,8 @@ export type IPost = {
   image_url: string;
   post_url: string;
   categories: string;
-  publish_date: string;
+  publish_date: number;
+  blacklisted: boolean;
 };
 
 export interface IPostInCart extends IPost {

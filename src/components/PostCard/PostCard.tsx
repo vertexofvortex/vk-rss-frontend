@@ -1,15 +1,20 @@
 import {
-  Badge,
+  ActionIcon,
   Button,
   Card,
   Flex,
   Group,
   Image,
-  Space,
   Text,
 } from "@mantine/core";
-import { IconExternalLink } from "@tabler/icons-react";
+import {
+  IconCalendarEvent,
+  IconCategory,
+  IconExternalLink,
+  IconTrash,
+} from "@tabler/icons-react";
 import { memo } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { addPost, removePost } from "../../features/postsCart/postsCartSlice";
 import { IPostInCart } from "../../models/Post";
@@ -17,6 +22,7 @@ import { IPostInCart } from "../../models/Post";
 export const PostCard = memo((post: IPostInCart) => {
   const postsCart = useAppSelector((state) => state.postsCart.posts);
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   return (
     <Card
@@ -41,7 +47,7 @@ export const PostCard = memo((post: IPostInCart) => {
         )}
       </Card.Section>
       <Group position="apart" mt="md" mb="xs">
-        <Text weight={500}>{post.title}</Text>
+        <Text weight={600}>{post.title}</Text>
       </Group>
       <Text
         size="sm"
@@ -49,24 +55,33 @@ export const PostCard = memo((post: IPostInCart) => {
         style={{
           flexGrow: "1",
         }}
+        mb={"md"}
       >
         {post.description}
       </Text>
-      <Space p={"xs"} />
-      <Badge
-        variant={"dot"}
-        style={{
-          width: "fit-content",
-        }}
-      >
-        {post.categories}
-      </Badge>
-      <Flex gap={"md"}>
+      <Text size={"xs"} color={"blue"} mb={"md"}>
+        <Group>
+          <Flex gap={"5px"}>
+            <IconCalendarEvent size={"1rem"} />
+            {new Date(post.publish_date * 1000).toLocaleString("ru-RU", {
+              dateStyle: "short",
+            })}
+            {`, `}
+            {new Date(post.publish_date * 1000).toLocaleTimeString("ru-RU", {
+              timeStyle: "short",
+            })}
+          </Flex>
+          <Flex gap={"5px"}>
+            <IconCategory size={"1rem"} />
+            {post.categories}
+          </Flex>
+        </Group>
+      </Text>
+      <Flex gap={"md"} align={"center"}>
         {!(post.id in postsCart) ? (
           <Button
             variant="light"
             color="blue"
-            mt="md"
             radius="md"
             style={{
               flexGrow: "1",
@@ -79,7 +94,6 @@ export const PostCard = memo((post: IPostInCart) => {
           <Button
             variant="light"
             color="red"
-            mt="md"
             radius="md"
             style={{
               flexGrow: "1",
@@ -89,17 +103,26 @@ export const PostCard = memo((post: IPostInCart) => {
             Удалить из очереди
           </Button>
         )}
-        <Button
-          variant="light"
-          color="blue"
-          mt="md"
-          radius="md"
-          component="a"
-          href={post.post_url}
-          target={"_blank"}
+        <Link to={post.post_url} target={"_blank"}>
+          <ActionIcon
+            h={"2.25rem"}
+            w={"2.25rem"}
+            radius={"md"}
+            color={"blue"}
+            variant={"light"}
+          >
+            <IconExternalLink size={"1rem"} />
+          </ActionIcon>
+        </Link>
+        <ActionIcon
+          h={"2.25rem"}
+          w={"2.25rem"}
+          radius={"md"}
+          color={"red"}
+          variant={"light"}
         >
-          <IconExternalLink size={20} />
-        </Button>
+          <IconTrash size={"1rem"} />
+        </ActionIcon>
       </Flex>
     </Card>
   );
