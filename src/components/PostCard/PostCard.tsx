@@ -12,6 +12,7 @@ import {
   IconCategory,
   IconExternalLink,
   IconTrash,
+  IconTrashX,
 } from "@tabler/icons-react";
 import { memo } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -78,30 +79,48 @@ export const PostCard = memo((post: IPostInCart) => {
         </Group>
       </Text>
       <Flex gap={"md"} align={"center"}>
-        {!(post.id in postsCart) ? (
-          <Button
-            variant="light"
-            color="blue"
-            radius="md"
-            style={{
-              flexGrow: "1",
-            }}
-            onClick={() => dispatch(addPost(post))}
-          >
-            Добавить в очередь
-          </Button>
+        {!post.blacklisted ? (
+          <>
+            {!(post.id in postsCart) ? (
+              <Button
+                variant="light"
+                color="blue"
+                radius="md"
+                style={{
+                  flexGrow: "1",
+                }}
+                onClick={() => dispatch(addPost(post))}
+              >
+                Добавить в очередь
+              </Button>
+            ) : (
+              <Button
+                variant="light"
+                color="red"
+                radius="md"
+                style={{
+                  flexGrow: "1",
+                }}
+                onClick={() => dispatch(removePost(post))}
+              >
+                Удалить из очереди
+              </Button>
+            )}
+          </>
         ) : (
-          <Button
-            variant="light"
-            color="red"
-            radius="md"
-            style={{
-              flexGrow: "1",
-            }}
-            onClick={() => dispatch(removePost(post))}
-          >
-            Удалить из очереди
-          </Button>
+          <>
+            <Button
+              variant="light"
+              color="blue"
+              radius="md"
+              style={{
+                flexGrow: "1",
+              }}
+              onClick={() => alert("not implemented")}
+            >
+              Восстановить
+            </Button>
+          </>
         )}
         <Link to={post.post_url} target={"_blank"}>
           <ActionIcon
@@ -114,15 +133,27 @@ export const PostCard = memo((post: IPostInCart) => {
             <IconExternalLink size={"1rem"} />
           </ActionIcon>
         </Link>
-        <ActionIcon
-          h={"2.25rem"}
-          w={"2.25rem"}
-          radius={"md"}
-          color={"red"}
-          variant={"light"}
-        >
-          <IconTrash size={"1rem"} />
-        </ActionIcon>
+        {!post.blacklisted ? (
+          <ActionIcon
+            h={"2.25rem"}
+            w={"2.25rem"}
+            radius={"md"}
+            color={"red"}
+            variant={"light"}
+          >
+            <IconTrash size={"1rem"} />
+          </ActionIcon>
+        ) : (
+          <ActionIcon
+            h={"2.25rem"}
+            w={"2.25rem"}
+            radius={"md"}
+            color={"red"}
+            variant={"light"}
+          >
+            <IconTrashX size={"1rem"} />
+          </ActionIcon>
+        )}
       </Flex>
     </Card>
   );

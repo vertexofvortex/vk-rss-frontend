@@ -5,6 +5,7 @@ import {
   IconListDetails,
   IconNews,
   IconShare,
+  IconTrash,
   IconUsersGroup,
 } from "@tabler/icons-react";
 import { NavLink as RouterLink } from "react-router-dom";
@@ -87,6 +88,19 @@ export function AppNavbarContent({ drawerActions }: Props) {
                   ) : (
                     <Loader size={20} />
                   )
+                }
+                rightSection={<IconChevronRight size={20} />}
+                active={isActive}
+                onClick={drawerActions && drawerActions.close}
+              />
+            )}
+          </RouterLink>
+          <RouterLink to={"/feeds/blacklist"} className={styles.link}>
+            {({ isActive, isPending }) => (
+              <NavLink
+                label="Чёрный список постов"
+                icon={
+                  !isPending ? <IconTrash size={20} /> : <Loader size={20} />
                 }
                 rightSection={<IconChevronRight size={20} />}
                 active={isActive}

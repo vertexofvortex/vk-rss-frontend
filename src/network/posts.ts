@@ -6,8 +6,20 @@ export async function getPosts(): AxiosPromise<IPost[]> {
   return axiosInstance.get("/posts");
 }
 
+export async function getPostsBlacklist(): AxiosPromise<IPost[]> {
+  return axiosInstance.get("/posts_blacklisted");
+}
+
 export async function getPostsBySourceId(
   source_id: number
 ): AxiosPromise<IPost[]> {
   return axiosInstance.get(`/posts/by_source/${source_id}`);
+}
+
+export async function blockPost(post_id: number) {
+  return axiosInstance.put(`/posts/${post_id}/block`);
+}
+
+export async function unblockPost(post_id: number) {
+  return axiosInstance.put(`/posts/${post_id}/block`);
 }
