@@ -12,10 +12,15 @@ import {
   IconCategory,
   IconExternalLink,
   IconTrash,
-  IconTrashX,
 } from "@tabler/icons-react";
 import { memo } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import {
+  Form,
+  Link,
+  useActionData,
+  useNavigate,
+  useSubmit,
+} from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { addPost, removePost } from "../../features/postsCart/postsCartSlice";
 import { IPostInCart } from "../../models/Post";
@@ -24,6 +29,22 @@ export const PostCard = memo((post: IPostInCart) => {
   const postsCart = useAppSelector((state) => state.postsCart.posts);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const submit = useSubmit();
+  const actionData = useActionData();
+
+  // function submitPostBlock() {
+  //   console.log("submit");
+
+  //   submit(null, {
+  //     action: `${post.id}/block`,
+  //     method: "POST",
+  //     relative: "route",
+  //   });
+  // }
+
+  // useEffect(() => {
+  //   console.log(actionData);
+  // }, [actionData]);
 
   return (
     <Card
@@ -78,7 +99,7 @@ export const PostCard = memo((post: IPostInCart) => {
           </Flex>
         </Group>
       </Text>
-      <Flex gap={"md"} align={"center"}>
+      <Flex gap={"md"} align={"center"} wrap={"wrap"}>
         {!post.blacklisted ? (
           <>
             {!(post.id in postsCart) ? (
@@ -108,7 +129,11 @@ export const PostCard = memo((post: IPostInCart) => {
             )}
           </>
         ) : (
-          <>
+          <Form
+            method={"POST"}
+            action={`${post.id}/unblock`}
+            relative={"route"}
+          >
             <Button
               variant="light"
               color="blue"
@@ -116,11 +141,11 @@ export const PostCard = memo((post: IPostInCart) => {
               style={{
                 flexGrow: "1",
               }}
-              onClick={() => alert("not implemented")}
+              type={"submit"}
             >
               Восстановить
             </Button>
-          </>
+          </Form>
         )}
         <Link to={post.post_url} target={"_blank"}>
           <ActionIcon
@@ -133,26 +158,19 @@ export const PostCard = memo((post: IPostInCart) => {
             <IconExternalLink size={"1rem"} />
           </ActionIcon>
         </Link>
-        {!post.blacklisted ? (
-          <ActionIcon
-            h={"2.25rem"}
-            w={"2.25rem"}
-            radius={"md"}
-            color={"red"}
-            variant={"light"}
-          >
-            <IconTrash size={"1rem"} />
-          </ActionIcon>
-        ) : (
-          <ActionIcon
-            h={"2.25rem"}
-            w={"2.25rem"}
-            radius={"md"}
-            color={"red"}
-            variant={"light"}
-          >
-            <IconTrashX size={"1rem"} />
-          </ActionIcon>
+        {!post.blacklisted && (
+          <Form method={"POST"} action={`${post.id}/block`} relative={"route"}>
+            <ActionIcon
+              h={"2.25rem"}
+              w={"2.25rem"}
+              radius={"md"}
+              color={"red"}
+              variant={"light"}
+              type={"submit"}
+            >
+              <IconTrash size={"1rem"} />
+            </ActionIcon>
+          </Form>
         )}
       </Flex>
     </Card>

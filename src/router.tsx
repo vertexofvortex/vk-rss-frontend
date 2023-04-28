@@ -1,6 +1,9 @@
 import { Suspense, lazy } from "react";
 import { Navigate, createBrowserRouter } from "react-router-dom";
-import { blockPostAction } from "./routes/feeds/feeds.action";
+import {
+  blockPostAction,
+  unblockPostAction,
+} from "./routes/feeds/feeds.action";
 import {
   loadBlacklist,
   loadGroupsPosts,
@@ -100,7 +103,7 @@ const router = createBrowserRouter([
             loader: loadPosts,
             children: [
               {
-                path: "block",
+                path: ":id/block",
                 action: blockPostAction,
               },
             ],
@@ -113,6 +116,12 @@ const router = createBrowserRouter([
               </Suspense>
             ),
             loader: loadGroupsPosts,
+            children: [
+              {
+                path: ":id/block",
+                action: blockPostAction,
+              },
+            ],
           },
           {
             path: "blacklist",
@@ -122,6 +131,12 @@ const router = createBrowserRouter([
               </Suspense>
             ),
             loader: loadBlacklist,
+            children: [
+              {
+                path: ":id/unblock",
+                action: unblockPostAction,
+              },
+            ],
           },
         ],
       },
