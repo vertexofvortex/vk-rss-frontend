@@ -133,15 +133,16 @@ export const PostCard = memo((post: IPostInCart) => {
             method={"POST"}
             action={`${post.id}/unblock`}
             relative={"route"}
+            style={{
+              flexGrow: "1",
+            }}
           >
             <Button
               variant="light"
               color="blue"
               radius="md"
-              style={{
-                flexGrow: "1",
-              }}
               type={"submit"}
+              fullWidth
             >
               Восстановить
             </Button>

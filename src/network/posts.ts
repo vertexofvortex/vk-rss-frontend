@@ -21,5 +21,5 @@ export async function blockPost(post_id: number) {
 }
 
 export async function unblockPost(post_id: number) {
-  return axiosInstance.put(`/posts/${post_id}/block`);
+  return axiosInstance.put(`/posts/${post_id}/unblock`);
 }
