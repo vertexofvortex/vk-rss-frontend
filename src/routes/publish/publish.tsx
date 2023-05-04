@@ -24,6 +24,15 @@ export function Publish() {
   );
   const mobileWidth = useMediaQuery("(max-width: 851px)");
 
+  // function handlePostSelection(post: IPost) {
+  //   getSourceById(post.source_id)
+  //     .then(() => {
+  //       setCurrentPost(post);
+
+  //     })
+  //     .catch();
+  // }
+
   return (
     <>
       {Object.keys(postsCart.posts).length > 0 ? (
@@ -95,9 +104,6 @@ export function Publish() {
                           color={"red"}
                           onClick={() => {
                             dispatch(removePost(post));
-                            // if (currentPost?.id == post.id) {
-                            //     setCurrentPost(undefined);
-                            // }
                           }}
                         >
                           <IconTrash size={"1rem"} />

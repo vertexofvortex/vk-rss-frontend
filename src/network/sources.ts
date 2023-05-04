@@ -7,6 +7,10 @@ export async function getSources(): AxiosPromise<ISource[]> {
   return axiosInstance.get("/sources");
 }
 
+export async function getSourceById(source_id: number) {
+  return axiosInstance.get(`/sources/${source_id}`);
+}
+
 export async function getGroupSources(
   group_id: number
 ): AxiosPromise<ISource[]> {
