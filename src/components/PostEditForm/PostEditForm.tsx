@@ -100,11 +100,6 @@ export function PostEditForm({ post, groups }: Props) {
     });
   }, [post]);
 
-  // FIXME: TO REMOVE:
-  useEffect(() => {
-    console.log(form.values);
-  }, [form.values]);
-
   useEffect(() => {
     if (!form.values.image_file) return;
 

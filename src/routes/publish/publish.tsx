@@ -3,23 +3,24 @@ import { useMediaQuery } from "@mantine/hooks";
 import {
   IconAlertCircle,
   IconCheck,
+  IconEdit,
   IconTrash,
   IconX,
 } from "@tabler/icons-react";
 import { AxiosResponse } from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLoaderData } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { PostEditForm } from "../../components";
 import { removePost } from "../../features/postsCart/postsCartSlice";
 import { IGroup } from "../../models";
-import { IPostInCart } from "../../models/Post";
+import { IPost, IPostInCart } from "../../models/Post";
 
 export function Publish() {
   const postsCart = useAppSelector((state) => state.postsCart);
   const dispatch = useAppDispatch();
   const groups = (useLoaderData() as AxiosResponse<IGroup[]>).data;
-  const [currentPost, setCurrentPost] = useState<IPostInCart>(
+  const [currentPost, setCurrentPost] = useState<IPostInCart | null>(
     Object.values(postsCart.posts)[0]
   );
   const mobileWidth = useMediaQuery("(max-width: 851px)");
@@ -33,11 +34,29 @@ export function Publish() {
   //     .catch();
   // }
 
+  // FIXME: buggy, there is no switch to another post when 0st deleted
+
+  function handlePostRemoval(post: IPost): void {
+    if (currentPost?.id == post.id) {
+      setCurrentPost(Object.values(postsCart.posts)[0]);
+    }
+
+    dispatch(removePost(post));
+  }
+
+  useEffect(() => {
+    console.log("currentPost", currentPost, Object.values(postsCart.posts));
+  }, [currentPost]);
+
   return (
     <>
       {Object.keys(postsCart.posts).length > 0 ? (
         <>
-          <PostEditForm post={currentPost} groups={groups} />
+          {currentPost ? (
+            <PostEditForm post={currentPost} groups={groups} />
+          ) : (
+            <Alert>Выберите пост</Alert>
+          )}
           <Group
             p={"xl"}
             style={{
@@ -56,6 +75,7 @@ export function Publish() {
               <Table striped>
                 <thead>
                   <tr>
+                    <th></th>
                     <th>Заголовок</th>
                     <th>Картинка</th>
                     <th>Группа</th>
@@ -71,11 +91,24 @@ export function Publish() {
                       style={{
                         background:
                           post.id == currentPost?.id ? "#0000001b" : "",
-                        cursor: "pointer",
                       }}
-                      onClick={() => setCurrentPost(post)}
                     >
-                      <td>{post.title}</td>
+                      <td>
+                        <ActionIcon
+                          variant={"light"}
+                          onClick={() => setCurrentPost(post)}
+                        >
+                          <IconEdit size={"1rem"} />
+                        </ActionIcon>
+                      </td>
+                      <td
+                        style={{
+                          fontWeight:
+                            post.id == currentPost?.id ? "bold" : "unset",
+                        }}
+                      >
+                        {post.title}
+                      </td>
                       <td>
                         {post.image_url ? (
                           <IconCheck size={"1rem"} color={"green"} />
@@ -102,9 +135,7 @@ export function Publish() {
                       <td align={"right"}>
                         <ActionIcon
                           color={"red"}
-                          onClick={() => {
-                            dispatch(removePost(post));
-                          }}
+                          onClick={() => handlePostRemoval(post)}
                         >
                           <IconTrash size={"1rem"} />
                         </ActionIcon>
