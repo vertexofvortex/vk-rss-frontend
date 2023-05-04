@@ -14,37 +14,17 @@ import {
   IconTrash,
 } from "@tabler/icons-react";
 import { memo } from "react";
-import {
-  Form,
-  Link,
-  useActionData,
-  useNavigate,
-  useSubmit,
-} from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { Form, Link } from "react-router-dom";
+import { useAppDispatch } from "../../app/hooks";
 import { addPost, removePost } from "../../features/postsCart/postsCartSlice";
 import { IPostInCart } from "../../models/Post";
 
-export const PostCard = memo((post: IPostInCart) => {
-  const postsCart = useAppSelector((state) => state.postsCart.posts);
+interface Props extends IPostInCart {
+  isInCart?: boolean;
+}
+
+export const PostCard = memo(({ isInCart, ...post }: Props) => {
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
-  const submit = useSubmit();
-  const actionData = useActionData();
-
-  // function submitPostBlock() {
-  //   console.log("submit");
-
-  //   submit(null, {
-  //     action: `${post.id}/block`,
-  //     method: "POST",
-  //     relative: "route",
-  //   });
-  // }
-
-  // useEffect(() => {
-  //   console.log(actionData);
-  // }, [actionData]);
 
   return (
     <Card
@@ -102,7 +82,7 @@ export const PostCard = memo((post: IPostInCart) => {
       <Flex gap={"md"} align={"center"} wrap={"wrap"}>
         {!post.blacklisted ? (
           <>
-            {!(post.id in postsCart) ? (
+            {!isInCart ? (
               <Button
                 variant="light"
                 color="blue"

@@ -3,6 +3,7 @@ import { useMediaQuery } from "@mantine/hooks";
 import { AxiosResponse } from "axios";
 import { useState } from "react";
 import { useLoaderData } from "react-router-dom";
+import { useAppSelector } from "../../app/hooks";
 import {
   FeedCategoriesBlock,
   PaginationBlock,
@@ -16,6 +17,7 @@ export function FeedsAll() {
   const [activePage, setActivePage] = useState<number>(1);
   const [activeCategory, setActiveCategory] = useState<string>();
   const mobileWidth = useMediaQuery("(max-width: 851px)");
+  const postsCart = useAppSelector((state) => state.postsCart.posts);
 
   return (
     <>
@@ -34,7 +36,7 @@ export function FeedsAll() {
         {paginatePosts(filterPosts(data, activeCategory), activePage).map(
           (item) => (
             <Grid.Col key={item.id} span={mobileWidth ? 12 : 4}>
-              <PostCard {...item} />
+              <PostCard {...item} isInCart={item.id in postsCart} />
             </Grid.Col>
           )
         )}

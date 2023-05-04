@@ -10,6 +10,7 @@ import {
 } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { memo, useState } from "react";
+import { useAppSelector } from "../../app/hooks";
 import { IGroupWithPosts } from "../../models/Group";
 import { filterPosts, paginatePosts } from "../../reusables";
 import FeedCategoriesBlock from "../FeedCategoriesBlock/FeedCategoriesBlock";
@@ -20,6 +21,7 @@ export const GroupFeed = memo((group: IGroupWithPosts) => {
   const [activePage, setActivePage] = useState<number>(1);
   const [activeCategory, setActiveCategory] = useState<string>();
   const mobileWidth = useMediaQuery("(max-width: 851px)");
+  const postsCart = useAppSelector((state) => state.postsCart.posts);
 
   return (
     <Accordion.Item value={group.name} key={group.id}>
@@ -74,7 +76,11 @@ export const GroupFeed = memo((group: IGroupWithPosts) => {
                 activePage
               ).map((post) => (
                 <Grid.Col key={post.id} span={mobileWidth ? 12 : 4}>
-                  <PostCard {...post} for_group={group} />
+                  <PostCard
+                    {...post}
+                    for_group={group}
+                    isInCart={post.id in postsCart}
+                  />
                 </Grid.Col>
               ))}
             </Grid>
