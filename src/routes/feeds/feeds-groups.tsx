@@ -1,14 +1,12 @@
 import { Accordion, Alert, Stack } from "@mantine/core";
 import { IconAlertCircle } from "@tabler/icons-react";
 import { AxiosResponse } from "axios";
-import { useState } from "react";
 import { useLoaderData } from "react-router-dom";
 import { GroupFeed } from "../../components";
 import { IGroupWithPosts } from "../../models/Group";
 
 export function FeedsGroups() {
   const { data } = useLoaderData() as AxiosResponse<IGroupWithPosts[]>;
-  const [groups, setGroups] = useState<IGroupWithPosts[]>();
 
   return (
     <Stack>

@@ -1,4 +1,5 @@
 import { Accordion, Badge, Flex, UnstyledButton } from "@mantine/core";
+import { memo } from "react";
 import { IPost } from "../../models";
 
 interface Props {
@@ -9,7 +10,7 @@ interface Props {
   ];
 }
 
-export function FeedCategoriesBlock({ data, actions }: Props) {
+export const FeedCategoriesBlock = memo(({ data, actions }: Props) => {
   function parseCategories(): Set<string> {
     return new Set(
       data.map((post) => post.categories).filter((category) => category != null)
@@ -54,6 +55,6 @@ export function FeedCategoriesBlock({ data, actions }: Props) {
       </Accordion.Item>
     </Accordion>
   );
-}
+});
 
 export default FeedCategoriesBlock;
