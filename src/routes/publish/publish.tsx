@@ -4,6 +4,7 @@ import {
   IconAlertCircle,
   IconCheck,
   IconEdit,
+  IconPhoto,
   IconTrash,
   IconX,
 } from "@tabler/icons-react";
@@ -76,12 +77,12 @@ export function Publish() {
                 <thead>
                   <tr>
                     <th></th>
-                    <th>Заголовок</th>
-                    <th>Картинка</th>
-                    <th>Группа</th>
-                    <th align={"right"} style={{ textAlign: "right" }}>
-                      Действия
+                    <th>Новость</th>
+                    <th>
+                      <IconPhoto size={"1rem"} />
                     </th>
+                    <th>Группа</th>
+                    <th align={"right"} style={{ textAlign: "right" }}></th>
                   </tr>
                 </thead>
                 <tbody>

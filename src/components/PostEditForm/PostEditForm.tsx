@@ -297,9 +297,7 @@ export function PostEditForm({ post, groups }: Props) {
                 </Button>
               </Tooltip>
               <DateTimePicker
-                placeholder={
-                  "Введите дату публикации или оставьте пустым, чтобы запостить сейчас"
-                }
+                placeholder={"Введите дату, если хотите отложить пост"}
                 valueFormat={"ddd, DD MMM YYYY, HH:MM"}
                 {...form.getInputProps("queued_date")}
                 clearable

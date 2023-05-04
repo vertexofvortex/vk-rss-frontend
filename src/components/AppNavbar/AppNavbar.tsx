@@ -156,7 +156,7 @@ export function AppNavbarContent({ drawerActions }: Props) {
                   <IconShare size={20} />
                 )
               }
-              label={"Публикация"}
+              label={"Очередь публикации"}
               description={"Опубликуйте выбранные новости на стене сообщества"}
               rightSection={<IconChevronRight size={20} />}
               active={isActive}
