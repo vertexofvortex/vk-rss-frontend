@@ -6,7 +6,7 @@ import { Provider } from "react-redux";
 import { RouterProvider } from "react-router-dom";
 import { store } from "./app/store";
 import { saveState } from "./app/store-persist";
-import "./main.css";
+//import "./main.css";
 import router from "./router";
 
 store.subscribe(() => saveState(store.getState()));
