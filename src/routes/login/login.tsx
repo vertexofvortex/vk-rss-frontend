@@ -1,4 +1,4 @@
-import { Button } from "@mantine/core";
+import { Button, Container } from "@mantine/core";
 import { Form, useForm } from "@mantine/form";
 import { AxiosError, AxiosResponse } from "axios";
 import { useEffect } from "react";
@@ -71,37 +71,20 @@ export function Login() {
     });
   }
 
-  // return (
-  //   <AppShell header={<AppHeader />} padding={"xl"} bg={"#FCFCFC"}>
-  //     <Flex align={"center"} h={"100%"}>
-  //       <Container size={"xs"} style={{ flexGrow: 1 }}>
-  //         <Form form={loginForm}>
-  //           <InputPassword
-  //             placeholder={"Пароль"}
-  //             description={"Введите пароль"}
-  //             {...loginForm.getInputProps("password")}
-  //             mb={"md"}
-  //           />
-  //           <Button onClick={handleLogin} fullWidth>
-  //             Авторизоваться
-  //           </Button>
-  //         </Form>
-  //       </Container>
-  //     </Flex>
-  //   </AppShell>
-  // );
   return (
-    <Form form={loginForm}>
-      <InputPassword
-        placeholder={"Пароль"}
-        description={"Введите пароль"}
-        {...loginForm.getInputProps("password")}
-        mb={"md"}
-      />
-      <Button onClick={handleLogin} fullWidth>
-        Авторизоваться
-      </Button>
-    </Form>
+    <Container>
+      <Form form={loginForm}>
+        <InputPassword
+          placeholder={"Пароль"}
+          description={"Введите пароль"}
+          {...loginForm.getInputProps("password")}
+          mb={"md"}
+        />
+        <Button onClick={handleLogin} fullWidth>
+          Авторизоваться
+        </Button>
+      </Form>
+    </Container>
   );
 }
 
