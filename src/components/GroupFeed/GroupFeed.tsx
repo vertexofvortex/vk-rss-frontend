@@ -6,27 +6,20 @@ import {
   Flex,
   Grid,
   Group,
-  Pagination,
   Text,
-  UnstyledButton,
 } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { memo, useState } from "react";
 import { IGroupWithPosts } from "../../models/Group";
+import { filterPosts, paginatePosts } from "../../reusables";
+import FeedCategoriesBlock from "../FeedCategoriesBlock/FeedCategoriesBlock";
+import PaginationBlock from "../PaginationBlock/PaginationBlock";
 import { PostCard } from "../PostCard/PostCard";
 
 export const GroupFeed = memo((group: IGroupWithPosts) => {
   const [activePage, setActivePage] = useState<number>(1);
   const [activeCategory, setActiveCategory] = useState<string>();
   const mobileWidth = useMediaQuery("(max-width: 851px)");
-
-  function parseCategories(): Set<string> {
-    return new Set(
-      group.posts
-        .map((post) => post.categories)
-        .filter((category) => category != null)
-    );
-  }
 
   return (
     <Accordion.Item value={group.name} key={group.id}>
@@ -64,82 +57,32 @@ export const GroupFeed = memo((group: IGroupWithPosts) => {
       {group.posts.length > 0 && (
         <>
           <Accordion.Panel>
-            <Accordion variant={"contained"} mb={"md"}>
-              <Accordion.Item value={"categories"}>
-                <Accordion.Control>Категории</Accordion.Control>
-                <Accordion.Panel>
-                  <Flex wrap={"wrap"} gap={3}>
-                    <UnstyledButton
-                      onClick={() => setActiveCategory(undefined)}
-                    >
-                      <Badge
-                        variant={!activeCategory ? "filled" : "outline"}
-                        style={{
-                          width: "fit-content",
-                        }}
-                        mr={0}
-                      >
-                        Все
-                      </Badge>
-                    </UnstyledButton>
-                    {[...parseCategories()].map((category) => (
-                      <UnstyledButton
-                        onClick={() => setActiveCategory(category)}
-                        key={category}
-                      >
-                        <Badge
-                          variant={
-                            category == activeCategory ? "filled" : "outline"
-                          }
-                          style={{
-                            width: "fit-content",
-                          }}
-                          mr={0}
-                        >
-                          {category}
-                        </Badge>
-                      </UnstyledButton>
-                    ))}
-                  </Flex>
-                </Accordion.Panel>
-              </Accordion.Item>
-            </Accordion>
-            <Pagination
-              value={activePage}
-              onChange={setActivePage}
-              total={
-                Math.floor(
-                  group.posts.filter((value) =>
-                    activeCategory ? value.categories == activeCategory : value
-                  ).length / 21
-                ) + 1
-              }
+            <FeedCategoriesBlock
+              data={group.posts}
+              actions={[activeCategory, setActiveCategory]}
+            />
+            <PaginationBlock
+              itemsTotal={filterPosts(group.posts, activeCategory).length}
+              pageLength={36}
+              actions={[activePage, setActivePage]}
               mb={"md"}
               grow
             />
-            <Grid>
-              {group.posts
-                .filter((value) =>
-                  activeCategory ? value.categories == activeCategory : value
-                )
-                .slice((activePage - 1) * 21, activePage * 21)
-                .map((post) => (
-                  <Grid.Col key={post.id} span={mobileWidth ? 12 : 4}>
-                    <PostCard {...post} for_group={group} />
-                  </Grid.Col>
-                ))}
+            <Grid mb={"xs"}>
+              {paginatePosts(
+                filterPosts(group.posts, activeCategory),
+                activePage
+              ).map((post) => (
+                <Grid.Col key={post.id} span={mobileWidth ? 12 : 4}>
+                  <PostCard {...post} for_group={group} />
+                </Grid.Col>
+              ))}
             </Grid>
-            <Pagination
-              value={activePage}
-              onChange={setActivePage}
-              total={
-                Math.floor(
-                  group.posts.filter((value) =>
-                    activeCategory ? value.categories == activeCategory : value
-                  ).length / 21
-                ) + 1
-              }
-              mt={"md"}
+            <PaginationBlock
+              itemsTotal={filterPosts(group.posts, activeCategory).length}
+              pageLength={36}
+              actions={[activePage, setActivePage]}
+              mb={"md"}
               grow
             />
           </Accordion.Panel>

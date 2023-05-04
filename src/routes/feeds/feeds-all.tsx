@@ -1,17 +1,15 @@
-import {
-  Accordion,
-  Badge,
-  Flex,
-  Grid,
-  Pagination,
-  UnstyledButton,
-} from "@mantine/core";
+import { Grid } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { AxiosResponse } from "axios";
 import { useState } from "react";
 import { useLoaderData } from "react-router-dom";
-import { PostCard } from "../../components";
+import {
+  FeedCategoriesBlock,
+  PaginationBlock,
+  PostCard,
+} from "../../components";
 import { IPost } from "../../models/Post";
+import { filterPosts, paginatePosts } from "../../reusables";
 
 export function FeedsAll() {
   const { data } = useLoaderData() as AxiosResponse<IPost[]>;
@@ -19,85 +17,32 @@ export function FeedsAll() {
   const [activeCategory, setActiveCategory] = useState<string>();
   const mobileWidth = useMediaQuery("(max-width: 851px)");
 
-  function parseCategories(): Set<string> {
-    return new Set(
-      data.map((post) => post.categories).filter((category) => category != null)
-    );
-  }
-
   return (
     <>
-      <Accordion variant={"contained"} mb={"md"}>
-        <Accordion.Item value={"categories"}>
-          <Accordion.Control>Категории</Accordion.Control>
-          <Accordion.Panel>
-            <Flex wrap={"wrap"} gap={3}>
-              <UnstyledButton onClick={() => setActiveCategory(undefined)}>
-                <Badge
-                  variant={!activeCategory ? "filled" : "outline"}
-                  style={{
-                    width: "fit-content",
-                  }}
-                  mr={0}
-                >
-                  Все
-                </Badge>
-              </UnstyledButton>
-              {[...parseCategories()].map((category) => (
-                <UnstyledButton
-                  onClick={() => setActiveCategory(category)}
-                  key={category}
-                >
-                  <Badge
-                    variant={category == activeCategory ? "filled" : "outline"}
-                    style={{
-                      width: "fit-content",
-                    }}
-                    mr={0}
-                  >
-                    {category}
-                  </Badge>
-                </UnstyledButton>
-              ))}
-            </Flex>
-          </Accordion.Panel>
-        </Accordion.Item>
-      </Accordion>
-      <Pagination
-        value={activePage}
-        onChange={setActivePage}
-        total={
-          Math.floor(
-            data.filter((value) =>
-              activeCategory ? value.categories == activeCategory : value
-            ).length / 36
-          ) + 1
-        }
+      <FeedCategoriesBlock
+        data={data}
+        actions={[activeCategory, setActiveCategory]}
+      />
+      <PaginationBlock
+        itemsTotal={filterPosts(data, activeCategory).length}
+        pageLength={36}
+        actions={[activePage, setActivePage]}
         mb={"md"}
         grow
       />
       <Grid mb={"md"}>
-        {data
-          .filter((value) =>
-            activeCategory ? value.categories == activeCategory : value
-          )
-          .slice((activePage - 1) * 36, activePage * 36)
-          .map((item) => (
+        {paginatePosts(filterPosts(data, activeCategory), activePage).map(
+          (item) => (
             <Grid.Col key={item.id} span={mobileWidth ? 12 : 4}>
               <PostCard {...item} />
             </Grid.Col>
-          ))}
+          )
+        )}
       </Grid>
-      <Pagination
-        value={activePage}
-        onChange={setActivePage}
-        total={
-          Math.floor(
-            data.filter((value) =>
-              activeCategory ? value.categories == activeCategory : value
-            ).length / 36
-          ) + 1
-        }
+      <PaginationBlock
+        itemsTotal={filterPosts(data, activeCategory).length}
+        pageLength={36}
+        actions={[activePage, setActivePage]}
         mb={"md"}
         grow
       />
