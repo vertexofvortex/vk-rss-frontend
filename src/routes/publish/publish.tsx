@@ -1,5 +1,4 @@
 import { ActionIcon, Alert, Flex, Group, Table, Text } from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";
 import {
   IconAlertCircle,
   IconCheck,
@@ -9,7 +8,7 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import { AxiosResponse } from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useLoaderData } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { PostEditForm } from "../../components";
@@ -24,7 +23,7 @@ export function Publish() {
   const [currentPost, setCurrentPost] = useState<IPostInCart | null>(
     Object.values(postsCart.posts)[0]
   );
-  const mobileWidth = useMediaQuery("(max-width: 851px)");
+  // const mobileWidth = useMediaQuery("(max-width: 851px)");
 
   // function handlePostSelection(post: IPost) {
   //   getSourceById(post.source_id)
@@ -44,10 +43,6 @@ export function Publish() {
 
     dispatch(removePost(post));
   }
-
-  useEffect(() => {
-    console.log("currentPost", currentPost, Object.values(postsCart.posts));
-  }, [currentPost]);
 
   return (
     <>

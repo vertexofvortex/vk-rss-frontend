@@ -23,31 +23,9 @@ export function Login() {
   });
   const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   if (!actionData) return;
-
-  //   if (isAxiosError(actionData)) {
-  //     loginForm.setFieldError("password", "Неверный пароль");
-
-  //     return;
-  //   }
-
-  //   dispatch(set(actionData.data.access_token));
-  //   navigate("/");
-
-  //   console.log(actionData);
-  // }, [actionData]);
-
   useEffect(() => {
-    console.log("actionData", actionData);
-
     if (!actionData) return;
 
-    // if (isAxiosError(actionData)) {
-    //   loginForm.setFieldError("password", "Неверный пароль");
-
-    //   return;
-    // }
     if (actionData instanceof AxiosError) {
       loginForm.setFieldError("password", "Неверный пароль");
 

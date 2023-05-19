@@ -20,7 +20,7 @@ export function Sources() {
           message: `Посты обновлены. Всего постов в базе: ${data}`,
         });
       })
-      .catch((err) => {
+      .catch(() => {
         notifications.show({
           message: "Произошла ошибка.",
           color: "red",

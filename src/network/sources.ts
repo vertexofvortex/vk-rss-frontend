@@ -43,8 +43,6 @@ export async function createSource(
 }
 
 export async function createSourceWithForm(formdata: FormData) {
-  console.log("logo from method:", formdata.get("logo"));
-
   return axiosInstance.post(`/sources`, formdata, {
     headers: {
       "Content-Type": "multipart/form-data",

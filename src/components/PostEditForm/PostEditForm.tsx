@@ -7,7 +7,6 @@ import {
   Image,
   Modal,
   ModalProps,
-  Popover,
   Select,
   SelectItem,
   Text,
@@ -26,6 +25,7 @@ import {
 } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { rememberKey } from "../../features/keys/keysSlice";
 import { removePost } from "../../features/postsCart/postsCartSlice";
 import { IGroup, IKey } from "../../models";
 import { IPost, IPostInCart } from "../../models/Post";
@@ -35,7 +35,6 @@ import { generateImage } from "../../network/image-gen";
 import { getKeyById } from "../../network/keys";
 import { createPost } from "../../network/publish";
 import { InputPassword } from "../InputPassword/InputPassword";
-import { rememberKey } from "../../features/keys/keysSlice";
 
 interface Props {
   post: IPostInCart;
@@ -65,7 +64,7 @@ export function PostEditForm({ post, groups }: Props) {
   const [isImgModalOpen, imgModalActions] = useDisclosure();
   const [isSuccessModalOpen, successModalActions] = useDisclosure();
   const [image, setImage] = useState<string>();
-  const [isImageLoading, setImageLoading] = useState<boolean>(false);
+  const [isImageLoading] = useState<boolean>(false);
   const [usertoken, setUsertoken] = useState<IKey>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [imageError, setImageError] = useState<string>(); // костыль для отображения ошибки
@@ -91,11 +90,6 @@ export function PostEditForm({ post, groups }: Props) {
     },
   });
 
-  //FIXME:
-  useEffect(() => {
-    console.log(form.values);
-  }, [form.values]);
-
   useEffect(() => {
     form.setValues({
       title: post.title,
@@ -115,8 +109,6 @@ export function PostEditForm({ post, groups }: Props) {
     });
   }, [post]);
 
-  useEffect(() => {}, [post, usertoken]);
-
   useEffect(() => {
     if (!form.values.image_file) return;
 
@@ -124,8 +116,6 @@ export function PostEditForm({ post, groups }: Props) {
       "image_url",
       URL.createObjectURL(form.values.image_file)
     );
-
-    console.log(form.values);
   }, [form.values.image_file]);
 
   useEffect(() => {
@@ -205,8 +195,6 @@ export function PostEditForm({ post, groups }: Props) {
     const validation = form.validate();
 
     if (validation.hasErrors) {
-      console.log(validation);
-
       if ("image_url" in validation.errors) {
         setImageError(validation.errors.image_url?.toString());
       }

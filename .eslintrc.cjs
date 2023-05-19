@@ -35,5 +35,6 @@ module.exports = {
   plugins: ["react-refresh"],
   rules: {
     "react-refresh/only-export-components": "warn",
+    "prefer-const": [0],
   },
 };

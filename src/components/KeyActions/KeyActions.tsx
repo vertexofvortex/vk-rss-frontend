@@ -1,15 +1,10 @@
 import { ActionIcon, Button, Group, Menu, Modal, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import {
-  IconAdjustments,
-  IconBackspace,
-  IconBackspaceFilled,
-  IconTrash,
-} from "@tabler/icons-react";
-import { Form, useSubmit } from "react-router-dom";
-import { IKey } from "../../models";
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { IconAdjustments, IconBackspace, IconTrash } from "@tabler/icons-react";
+import { Form } from "react-router-dom";
+import { useAppDispatch } from "../../app/hooks";
 import { forgetKey } from "../../features/keys/keysSlice";
+import { IKey } from "../../models";
 
 interface Props {
   token: IKey;
@@ -17,8 +12,8 @@ interface Props {
 
 export function KeyActions({ token }: Props) {
   const [opened, { open, close }] = useDisclosure(false);
-  const submit = useSubmit();
-  const keys = useAppSelector((state) => state.keys);
+  // const submit = useSubmit();
+  // const keys = useAppSelector((state) => state.keys);
   const dispatch = useAppDispatch();
 
   function submitForgetPassphrase() {

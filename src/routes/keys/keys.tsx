@@ -1,5 +1,4 @@
 import {
-  ActionIcon,
   Alert,
   Button,
   Container,
@@ -12,29 +11,20 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
-import {
-  IconAlertCircle,
-  IconBackspaceFilled,
-  IconPlus,
-} from "@tabler/icons-react";
+import { IconAlertCircle, IconPlus } from "@tabler/icons-react";
 import { AxiosResponse } from "axios";
 import { useState } from "react";
-import {
-  useActionData,
-  useFetcher,
-  useLoaderData,
-  useSubmit,
-} from "react-router-dom";
+import { useFetcher, useLoaderData } from "react-router-dom";
 import { InputPassword, KeyActions } from "../../components";
 import { IKey } from "../../models";
 
 export function Keys() {
   const { data } = useLoaderData() as AxiosResponse<IKey[]>;
   const [opened, { open, close }] = useDisclosure(false);
-  const [isLoading, setIsLoading] = useState(false);
-  let submit = useSubmit();
+  const [isLoading] = useState(false);
+  // let submit = useSubmit();
   const fetcher = useFetcher();
-  let errors = useActionData();
+  // let errors = useActionData();
   const form = useForm({
     initialValues: {
       name: "",

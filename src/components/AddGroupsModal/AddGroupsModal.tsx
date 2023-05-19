@@ -80,7 +80,6 @@ export function AddGroupsModal(props: ModalProps) {
 
   function handleLoadGroups(usertoken_id: number, passphrase: string) {
     setIsLoading(true);
-    console.log(usertoken_id, passphrase);
 
     getVKGroups(usertoken_id, passphrase)
       .then((res) => {

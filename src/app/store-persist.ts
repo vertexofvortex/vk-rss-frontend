@@ -8,6 +8,7 @@ export function loadState() {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function saveState(state: any) {
   try {
     const serializedState = JSON.stringify(state);

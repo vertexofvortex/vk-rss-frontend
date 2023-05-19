@@ -112,7 +112,9 @@ export function AppNavbarContent({ drawerActions }: Props) {
         <RouterLink to={"/groups"} className={styles.link}>
           {({ isActive, isPending }) => (
             <NavLink
-              icon={<IconUsersGroup size={20} />}
+              icon={
+                !isPending ? <IconUsersGroup size={20} /> : <Loader size={20} />
+              }
               label={"Подключенные группы"}
               description={
                 "Подключите группы к сервису и настройте для них источники"
@@ -126,7 +128,7 @@ export function AppNavbarContent({ drawerActions }: Props) {
         <RouterLink to={"/keys"} className={styles.link}>
           {({ isActive, isPending }) => (
             <NavLink
-              icon={<IconKey size={20} />}
+              icon={!isPending ? <IconKey size={20} /> : <Loader size={20} />}
               label={"Подключенные токены"}
               description={"Управление подключенными ключами доступа"}
               rightSection={<IconChevronRight size={20} />}
@@ -141,19 +143,23 @@ export function AppNavbarContent({ drawerActions }: Props) {
           {({ isActive, isPending }) => (
             <NavLink
               icon={
-                Object.keys(postsCart).length > 0 ? (
-                  <Badge
-                    size="xs"
-                    variant="filled"
-                    color="red"
-                    w={20}
-                    h={20}
-                    p={0}
-                  >
-                    {Object.keys(postsCart).length}
-                  </Badge>
+                !isPending ? (
+                  Object.keys(postsCart).length > 0 ? (
+                    <Badge
+                      size="xs"
+                      variant="filled"
+                      color="red"
+                      w={20}
+                      h={20}
+                      p={0}
+                    >
+                      {Object.keys(postsCart).length}
+                    </Badge>
+                  ) : (
+                    <IconShare size={20} />
+                  )
                 ) : (
-                  <IconShare size={20} />
+                  <Loader size={20} />
                 )
               }
               label={"Очередь публикации"}
