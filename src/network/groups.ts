@@ -17,7 +17,9 @@ export async function getVKGroups(
   );
 }
 
-export async function getGroupById(group_id: number): AxiosPromise<IGroup> {
+export async function getGroupById(
+  group_id: string | number
+): AxiosPromise<IGroup> {
   return axiosInstance.get(`/groups/${group_id}`);
 }
 

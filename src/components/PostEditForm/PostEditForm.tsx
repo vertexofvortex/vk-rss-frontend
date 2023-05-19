@@ -43,7 +43,7 @@ interface FormValues {
   source_url: string;
   image_url: string;
   image_file: File;
-  for_group?: number;
+  for_group?: string;
   queued_date?: DateValue;
   passphrase: string;
   snippet: {
@@ -62,6 +62,7 @@ export function PostEditForm({ post, groups }: Props) {
   const [isImageLoading, setImageLoading] = useState<boolean>(false);
   const [usertoken, setUsertoken] = useState<IKey>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [imageError, setImageError] = useState<string>(); // костыль для отображения ошибки
   const mobileWidth = useMediaQuery("(max-width: 851px)");
 
   const form = useForm<FormValues>({
@@ -82,6 +83,11 @@ export function PostEditForm({ post, groups }: Props) {
     },
   });
 
+  //FIXME:
+  useEffect(() => {
+    console.log(form.values);
+  }, [form.values]);
+
   useEffect(() => {
     form.setValues({
       title: post.title,
@@ -90,7 +96,7 @@ export function PostEditForm({ post, groups }: Props) {
       source_url: post.post_url,
       image_url: post.image_url,
       image_file: undefined,
-      for_group: post.for_group?.id,
+      for_group: `${post.for_group?.id}`,
       snippet: {
         title: undefined,
         description: undefined,
@@ -186,7 +192,15 @@ export function PostEditForm({ post, groups }: Props) {
   async function handleSubmit() {
     const validation = form.validate();
 
-    if (validation.hasErrors) return;
+    if (validation.hasErrors) {
+      console.log(validation);
+
+      if ("image_url" in validation.errors) {
+        setImageError(validation.errors.image_url?.toString());
+      }
+
+      return;
+    }
 
     setIsLoading(true);
 
@@ -345,6 +359,7 @@ export function PostEditForm({ post, groups }: Props) {
               clearable
               accept={"image/png,image/jpeg"}
               mb={"md"}
+              error={imageError}
             />
             <Accordion variant={"contained"} mb={"md"}>
               <Accordion.Item value={"imggen"}>
