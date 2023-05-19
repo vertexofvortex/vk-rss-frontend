@@ -1,11 +1,13 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
-import authReducer from "../features/authSlice/authSlice";
+import authReducer from "../features/auth/authSlice";
 import postsCartReducer from "../features/postsCart/postsCartSlice";
+import keysReducer from "../features/keys/keysSlice";
 import { loadState } from "./store-persist";
 
 const reducers = combineReducers({
   postsCart: postsCartReducer,
   auth: authReducer,
+  keys: keysReducer,
 });
 
 export const store = configureStore({

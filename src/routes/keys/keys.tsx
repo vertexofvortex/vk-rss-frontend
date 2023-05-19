@@ -1,4 +1,5 @@
 import {
+  ActionIcon,
   Alert,
   Button,
   Container,
@@ -11,7 +12,11 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
-import { IconAlertCircle, IconPlus } from "@tabler/icons-react";
+import {
+  IconAlertCircle,
+  IconBackspaceFilled,
+  IconPlus,
+} from "@tabler/icons-react";
 import { AxiosResponse } from "axios";
 import { useState } from "react";
 import {

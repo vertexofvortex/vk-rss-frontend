@@ -8,3 +8,9 @@ export type IKeyCreate = {
   token: string;
   passphrase: string;
 };
+
+export type IKeyInStore = {
+  id: number;
+  name: string;
+  passphrase: string;
+};

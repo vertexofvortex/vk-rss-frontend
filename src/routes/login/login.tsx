@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { useActionData, useNavigate, useSubmit } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { InputPassword } from "../../components";
-import { set } from "../../features/authSlice/authSlice";
+import { set } from "../../features/auth/authSlice";
 
 interface FormValues {
   password: string;

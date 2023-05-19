@@ -7,6 +7,7 @@ import {
   Image,
   Modal,
   ModalProps,
+  Popover,
   Select,
   SelectItem,
   Text,
@@ -18,9 +19,13 @@ import { DateTimePicker, DateValue } from "@mantine/dates";
 import { Form, useForm } from "@mantine/form";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconAlertCircle, IconUpload } from "@tabler/icons-react";
+import {
+  IconAlertCircle,
+  IconDeviceFloppy,
+  IconUpload,
+} from "@tabler/icons-react";
 import { useEffect, useState } from "react";
-import { useAppDispatch } from "../../app/hooks";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { removePost } from "../../features/postsCart/postsCartSlice";
 import { IGroup, IKey } from "../../models";
 import { IPost, IPostInCart } from "../../models/Post";
@@ -30,6 +35,7 @@ import { generateImage } from "../../network/image-gen";
 import { getKeyById } from "../../network/keys";
 import { createPost } from "../../network/publish";
 import { InputPassword } from "../InputPassword/InputPassword";
+import { rememberKey } from "../../features/keys/keysSlice";
 
 interface Props {
   post: IPostInCart;
@@ -64,6 +70,8 @@ export function PostEditForm({ post, groups }: Props) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [imageError, setImageError] = useState<string>(); // костыль для отображения ошибки
   const mobileWidth = useMediaQuery("(max-width: 851px)");
+  const keys = useAppSelector((state) => state.keys);
+  const dispatch = useAppDispatch();
 
   const form = useForm<FormValues>({
     validate: {
@@ -97,6 +105,7 @@ export function PostEditForm({ post, groups }: Props) {
       image_url: post.image_url,
       image_file: undefined,
       for_group: `${post.for_group?.id}`,
+      passphrase: usertoken && keys.keys[usertoken.id]?.passphrase,
       snippet: {
         title: undefined,
         description: undefined,
@@ -105,6 +114,8 @@ export function PostEditForm({ post, groups }: Props) {
       },
     });
   }, [post]);
+
+  useEffect(() => {}, [post, usertoken]);
 
   useEffect(() => {
     if (!form.values.image_file) return;
@@ -122,9 +133,12 @@ export function PostEditForm({ post, groups }: Props) {
 
     getGroupById(form.values.for_group)
       .then((res) => getKeyById(res.data.token_id))
-      .then((res) => setUsertoken(res.data))
+      .then((res) => {
+        setUsertoken(res.data);
+        form.setFieldValue("passphrase", keys.keys[res.data.id]?.passphrase);
+      })
       .catch((err) => console.log(err));
-  }, [form.values.for_group]);
+  }, [form.values.for_group, post]);
 
   function adaptGroup(group: IGroup): SelectItem {
     return {
@@ -134,8 +148,6 @@ export function PostEditForm({ post, groups }: Props) {
   }
 
   async function generateSnippet() {
-    console.log(form.values);
-
     // Check if form has image URL or uploaded file
     if (!form.values.image_url && !form.values.image_file) {
       throw Error(
@@ -221,8 +233,15 @@ export function PostEditForm({ post, groups }: Props) {
         )
       )
       .then((res) => {
-        successModalActions.open();
         setIsLoading(false);
+        successModalActions.open();
+
+        dispatch(
+          rememberKey({
+            ...usertoken!,
+            passphrase: form.values.passphrase,
+          })
+        );
       })
       .catch((err) => {
         notifications.show({
@@ -277,12 +296,14 @@ export function PostEditForm({ post, groups }: Props) {
               label={
                 usertoken ? (
                   <>
-                    Введите кодовую фразу для ключа <b>{usertoken.name}</b>
+                    Введите кодовую фразу для ключа <b>{usertoken.name}</b> (она
+                    будет сохранена)
                   </>
                 ) : (
                   "Введите кодовую фразу для ключа"
                 )
               }
+              icon={<IconDeviceFloppy size={"1rem"} />}
               placeholder={
                 form.values.for_group ? "Ваш пароль" : "Сначала выберите группу"
               }
