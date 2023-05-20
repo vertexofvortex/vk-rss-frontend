@@ -1,5 +1,6 @@
 import {
   Accordion,
+  ActionIcon,
   Alert,
   Button,
   FileInput,
@@ -25,6 +26,7 @@ import {
   IconEdit,
   IconTrash,
   IconUpload,
+  IconX,
 } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
@@ -269,6 +271,13 @@ export function PostEditForm({
                 "Ссылка будет отображаться под описанием в тексте записи. Может не совпадать с источником"
               }
               {...form.getInputProps("source_text")}
+              rightSection={
+                <ActionIcon
+                  onClick={() => form.setFieldValue("source_text", "")}
+                >
+                  <IconX size={"1rem"} />
+                </ActionIcon>
+              }
               mb={"md"}
             />
             <TextInput
@@ -277,6 +286,13 @@ export function PostEditForm({
                 "Укажите источник, который будет отображаться у записи в ВК (может отличаться от ссылки на новость, например, ссылка на сайт издания)"
               }
               {...form.getInputProps("source_url")}
+              rightSection={
+                <ActionIcon
+                  onClick={() => form.setFieldValue("source_url", "")}
+                >
+                  <IconX size={"1rem"} />
+                </ActionIcon>
+              }
               mb={"md"}
             />
             <Select
