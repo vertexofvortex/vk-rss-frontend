@@ -96,7 +96,7 @@ export function PostEditForm({
         !v || v > new Date()
           ? null
           : "Опубликовать новость в прошлое невозможно",
-      image_url: (v) => (v ? null : "Прикрепите картинку"),
+      // image_url: (v) => (v ? null : "Прикрепите картинку"),
       passphrase: (v) => (v ? null : "Вы не указали пароль от ключа"),
     },
   });
@@ -149,13 +149,6 @@ export function PostEditForm({
   }
 
   async function generateSnippet() {
-    // Check if form has image URL or uploaded file
-    if (!form.values.image_url && !form.values.image_file) {
-      throw Error(
-        "У поста должна быть картинка. Если её нет изначально, то загрузите свою"
-      );
-    }
-
     // Trying to get the source logo
     let logo;
     try {
