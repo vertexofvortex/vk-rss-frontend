@@ -3,7 +3,7 @@ import { useMediaQuery } from "@mantine/hooks";
 import { IconLogout, IconMenu2 } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { clear } from "../../features/authSlice/authSlice";
+import { clear } from "../../features/auth/authSlice";
 
 interface Props {
   isDrawerOpened: boolean;

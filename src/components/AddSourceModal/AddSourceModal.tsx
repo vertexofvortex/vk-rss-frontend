@@ -19,7 +19,7 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
-import { useActionData, useFetcher, useSubmit } from "react-router-dom";
+import { useActionData, useSubmit } from "react-router-dom";
 import { checkSourceURL } from "../../network/sources";
 
 interface Props extends ModalProps {
@@ -35,11 +35,10 @@ interface FormValues {
 
 export function AddSourceModal({ actionType, ...props }: Props) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [rssSource, setRssSource] = useState<string>("");
+  const [rssSource] = useState<string>("");
   const actionData = useActionData();
   const form = useForm<FormValues>();
   const submit = useSubmit();
-  const fetcher = useFetcher();
 
   useEffect(() => {
     if (actionData) {
@@ -51,8 +50,6 @@ export function AddSourceModal({ actionType, ...props }: Props) {
   }, [actionData]);
 
   async function handleSubmit() {
-    console.log("logo from handle:", URL.createObjectURL(form.values.logo));
-
     const fd = new FormData();
     fd.append("title", form.values.title);
     fd.append("description", form.values.description);
@@ -151,7 +148,7 @@ function CheckURLValidity({ url }: { url: string }) {
           color: "teal",
         });
       })
-      .catch((err) => {
+      .catch(() => {
         notifications.show({
           title: "Проверка не выполнена",
           message: "RSS лента по указанной ссылке не найдена",

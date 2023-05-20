@@ -1,8 +1,9 @@
 import { ActionIcon, Alert, Flex, Group, Table, Text } from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";
 import {
   IconAlertCircle,
   IconCheck,
+  IconChevronLeft,
+  IconChevronRight,
   IconEdit,
   IconPhoto,
   IconTrash,
@@ -14,47 +15,84 @@ import { useLoaderData } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { PostEditForm } from "../../components";
 import { removePost } from "../../features/postsCart/postsCartSlice";
-import { IGroup } from "../../models";
-import { IPost, IPostInCart } from "../../models/Post";
+import { IGroup, ISource } from "../../models";
+import { getSourceByPostId } from "../../network/posts";
 
 export function Publish() {
   const postsCart = useAppSelector((state) => state.postsCart);
   const dispatch = useAppDispatch();
   const groups = (useLoaderData() as AxiosResponse<IGroup[]>).data;
-  const [currentPost, setCurrentPost] = useState<IPostInCart | null>(
-    Object.values(postsCart.posts)[0]
-  );
-  const mobileWidth = useMediaQuery("(max-width: 851px)");
 
-  // function handlePostSelection(post: IPost) {
-  //   getSourceById(post.source_id)
-  //     .then(() => {
-  //       setCurrentPost(post);
+  const [posts, setPosts] = useState(Object.values(postsCart.posts));
+  const [currentPostIndex, setCurrentPostIndex] = useState<number>();
+  const [postSource, setPostSource] = useState<ISource>();
 
-  //     })
-  //     .catch();
-  // }
+  useEffect(() => {
+    setPosts(Object.values(postsCart.posts));
+  }, [postsCart.posts]);
 
-  // FIXME: buggy, there is no switch to another post when 0st deleted
+  function handleNextPost() {
+    if (currentPostIndex === undefined) return;
+    if (currentPostIndex >= posts.length - 1) return;
 
-  function handlePostRemoval(post: IPost): void {
-    if (currentPost?.id == post.id) {
-      setCurrentPost(Object.values(postsCart.posts)[0]);
+    setCurrentPostIndex(currentPostIndex + 1);
+  }
+
+  function handlePrevPost() {
+    if (currentPostIndex === undefined) return;
+    if (currentPostIndex <= 0) return;
+
+    setCurrentPostIndex(currentPostIndex - 1);
+  }
+
+  function handleChangePostOnDeletion() {
+    if (posts.length <= 1) return;
+
+    if (currentPostIndex === 0) {
+      handleNextPost();
     }
+    if (currentPostIndex === posts.length - 1) {
+      handlePrevPost();
+    }
+  }
 
-    dispatch(removePost(post));
+  function handlePostDeletion(postIndex: number) {
+    dispatch(removePost(posts[postIndex]));
+
+    if (currentPostIndex === undefined) return;
+    if (posts.length === 0) setCurrentPostIndex(undefined);
+
+    setCurrentPostIndex(0);
+  }
+
+  function handleCurrentPostDeletion() {
+    if (currentPostIndex === undefined) return;
+
+    //handleChangePostOnDeletion();
+    handlePostDeletion(currentPostIndex);
   }
 
   useEffect(() => {
-    console.log("currentPost", currentPost, Object.values(postsCart.posts));
-  }, [currentPost]);
+    if (currentPostIndex === undefined) return;
+    if (posts.length === 0) return;
+
+    getSourceByPostId(posts[currentPostIndex].id)
+      .then(({ data }) => setPostSource(data))
+      .catch((err) => console.log(err));
+  }, [posts, currentPostIndex]);
 
   return (
     <>
-      {Object.keys(postsCart.posts).length > 0 ? (
+      {posts.length > 0 ? (
         <>
-          {currentPost ? (
-            <PostEditForm post={currentPost} groups={groups} />
+          {currentPostIndex !== undefined && postSource !== undefined ? (
+            <PostEditForm
+              post={posts[currentPostIndex]}
+              postSource={postSource}
+              groups={groups}
+              handleCurrentPostDeletion={handleCurrentPostDeletion}
+              handleNextPost={handleNextPost}
+            />
           ) : (
             <Alert>Выберите пост</Alert>
           )}
@@ -66,7 +104,23 @@ export function Publish() {
               backgroundColor: "#f8f9fa",
             }}
           >
-            <Text>Очередь постов</Text>
+            <Flex justify={"space-between"} w={"100%"}>
+              <Text>Очередь постов</Text>
+              <Group>
+                <ActionIcon
+                  disabled={currentPostIndex === 0}
+                  onClick={handlePrevPost}
+                >
+                  <IconChevronLeft size={"1rem"} />
+                </ActionIcon>
+                <ActionIcon
+                  disabled={currentPostIndex === posts.length - 1}
+                  onClick={handleNextPost}
+                >
+                  <IconChevronRight size={"1rem"} />
+                </ActionIcon>
+              </Group>
+            </Flex>
             <div
               style={{
                 width: "100%",
@@ -86,18 +140,18 @@ export function Publish() {
                   </tr>
                 </thead>
                 <tbody>
-                  {Object.values(postsCart.posts).map((post) => (
+                  {posts.map((post, index) => (
                     <tr
                       key={post.id}
                       style={{
                         background:
-                          post.id == currentPost?.id ? "#0000001b" : "",
+                          index == currentPostIndex ? "#0000001b" : "",
                       }}
                     >
                       <td>
                         <ActionIcon
                           variant={"light"}
-                          onClick={() => setCurrentPost(post)}
+                          onClick={() => setCurrentPostIndex(index)}
                         >
                           <IconEdit size={"1rem"} />
                         </ActionIcon>
@@ -105,7 +159,7 @@ export function Publish() {
                       <td
                         style={{
                           fontWeight:
-                            post.id == currentPost?.id ? "bold" : "unset",
+                            index == currentPostIndex ? "bold" : "unset",
                         }}
                       >
                         {post.title}
@@ -136,7 +190,7 @@ export function Publish() {
                       <td align={"right"}>
                         <ActionIcon
                           color={"red"}
-                          onClick={() => handlePostRemoval(post)}
+                          onClick={() => handlePostDeletion(index)}
                         >
                           <IconTrash size={"1rem"} />
                         </ActionIcon>

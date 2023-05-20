@@ -11,10 +11,7 @@ export function InputPassword(props: TextInputProps) {
       {...props}
       type={isHidden ? "password" : "text"}
       rightSection={
-        <ActionIcon
-          onClick={() => setIsHidden(!isHidden)}
-          variant={"transparent"}
-        >
+        <ActionIcon onClick={() => setIsHidden(!isHidden)}>
           {isHidden ? (
             <IconEye size={"1rem"} opacity={0.5} />
           ) : (

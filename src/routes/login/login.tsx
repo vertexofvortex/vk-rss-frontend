@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { useActionData, useNavigate, useSubmit } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { InputPassword } from "../../components";
-import { set } from "../../features/authSlice/authSlice";
+import { set } from "../../features/auth/authSlice";
 
 interface FormValues {
   password: string;
@@ -23,31 +23,9 @@ export function Login() {
   });
   const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   if (!actionData) return;
-
-  //   if (isAxiosError(actionData)) {
-  //     loginForm.setFieldError("password", "Неверный пароль");
-
-  //     return;
-  //   }
-
-  //   dispatch(set(actionData.data.access_token));
-  //   navigate("/");
-
-  //   console.log(actionData);
-  // }, [actionData]);
-
   useEffect(() => {
-    console.log("actionData", actionData);
-
     if (!actionData) return;
 
-    // if (isAxiosError(actionData)) {
-    //   loginForm.setFieldError("password", "Неверный пароль");
-
-    //   return;
-    // }
     if (actionData instanceof AxiosError) {
       loginForm.setFieldError("password", "Неверный пароль");
 

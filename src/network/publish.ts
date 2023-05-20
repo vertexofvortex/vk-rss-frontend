@@ -9,7 +9,7 @@ export async function createPost(
   image: File,
   usertoken_id: number,
   passphrase: string,
-  group_id: number,
+  group_id: number | string,
   publish_date: number | undefined | null
 ): AxiosPromise<any> {
   const fd = new FormData();

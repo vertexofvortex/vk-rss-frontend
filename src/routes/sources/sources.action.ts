@@ -34,7 +34,9 @@ export const editSourceAction = async ({
       formData.get("description") as string,
       formData.get("rss_url") as string
     );
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 export const deleteSourceAction = async ({ params }: ActionFunctionArgs) => {

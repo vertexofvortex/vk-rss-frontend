@@ -1,7 +1,9 @@
 import { ActionIcon, Button, Group, Menu, Modal, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { IconAdjustments, IconTrash } from "@tabler/icons-react";
-import { Form, useSubmit } from "react-router-dom";
+import { IconAdjustments, IconBackspace, IconTrash } from "@tabler/icons-react";
+import { Form } from "react-router-dom";
+import { useAppDispatch } from "../../app/hooks";
+import { forgetKey } from "../../features/keys/keysSlice";
 import { IKey } from "../../models";
 
 interface Props {
@@ -10,13 +12,13 @@ interface Props {
 
 export function KeyActions({ token }: Props) {
   const [opened, { open, close }] = useDisclosure(false);
-  const submit = useSubmit();
+  // const submit = useSubmit();
+  // const keys = useAppSelector((state) => state.keys);
+  const dispatch = useAppDispatch();
 
-  // function submit() {
-  //     deleteKey(token.id)
-  //         .then((res) => close())
-  //         .catch((err) => close());
-  // }
+  function submitForgetPassphrase() {
+    dispatch(forgetKey(token.id));
+  }
 
   return (
     <>
@@ -28,6 +30,12 @@ export function KeyActions({ token }: Props) {
         </Menu.Target>
         <Menu.Dropdown>
           <Menu.Label>Действия</Menu.Label>
+          <Menu.Item
+            icon={<IconBackspace size={"1rem"} />}
+            onClick={submitForgetPassphrase}
+          >
+            Забыть пароль
+          </Menu.Item>
           <Menu.Item
             icon={<IconTrash size={14} />}
             onClick={() => open()}

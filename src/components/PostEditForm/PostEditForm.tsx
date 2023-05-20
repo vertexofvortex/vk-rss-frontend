@@ -1,5 +1,6 @@
 import {
   Accordion,
+  ActionIcon,
   Alert,
   Button,
   FileInput,
@@ -18,11 +19,19 @@ import { DateTimePicker, DateValue } from "@mantine/dates";
 import { Form, useForm } from "@mantine/form";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconAlertCircle, IconUpload } from "@tabler/icons-react";
+import {
+  IconAlertCircle,
+  IconArrowForwardUp,
+  IconDeviceFloppy,
+  IconEdit,
+  IconTrash,
+  IconUpload,
+  IconX,
+} from "@tabler/icons-react";
 import { useEffect, useState } from "react";
-import { useAppDispatch } from "../../app/hooks";
-import { removePost } from "../../features/postsCart/postsCartSlice";
-import { IGroup, IKey } from "../../models";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { rememberKey } from "../../features/keys/keysSlice";
+import { IGroup, IKey, ISource } from "../../models";
 import { IPost, IPostInCart } from "../../models/Post";
 import axiosInstance from "../../network/axios-instance";
 import { getGroupById } from "../../network/groups";
@@ -33,7 +42,10 @@ import { InputPassword } from "../InputPassword/InputPassword";
 
 interface Props {
   post: IPostInCart;
+  postSource: ISource;
   groups: IGroup[];
+  handleCurrentPostDeletion: () => void;
+  handleNextPost: () => void;
 }
 
 interface FormValues {
@@ -43,7 +55,7 @@ interface FormValues {
   source_url: string;
   image_url: string;
   image_file: File;
-  for_group?: number;
+  for_group?: string;
   queued_date?: DateValue;
   passphrase: string;
   snippet: {
@@ -55,29 +67,38 @@ interface FormValues {
   };
 }
 
-export function PostEditForm({ post, groups }: Props) {
+export function PostEditForm({
+  post,
+  postSource,
+  groups,
+  handleCurrentPostDeletion,
+  handleNextPost,
+}: Props) {
   const [isImgModalOpen, imgModalActions] = useDisclosure();
   const [isSuccessModalOpen, successModalActions] = useDisclosure();
   const [image, setImage] = useState<string>();
-  const [isImageLoading, setImageLoading] = useState<boolean>(false);
+  const [isImageLoading] = useState<boolean>(false);
   const [usertoken, setUsertoken] = useState<IKey>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [imageError, setImageError] = useState<string>(); // костыль для отображения ошибки
   const mobileWidth = useMediaQuery("(max-width: 851px)");
+  const keys = useAppSelector((state) => state.keys);
+  const dispatch = useAppDispatch();
 
   const form = useForm<FormValues>({
     validate: {
       description: (v) => (v ? null : "У поста должен быть текст"),
-      source_url: (v) =>
-        /^(http|https):\/\/[^ "]+\.[^ "]+$/.test(v)
-          ? null
-          : "Ссылка должна быть действительной",
+      // source_url: (v) =>
+      //   /^(http|https):\/\/[^ "]+\.[^ "]+$/.test(v)
+      //     ? null
+      //     : "Ссылка должна быть действительной",
       for_group: (v) =>
         v ? null : "Укажите, в какую группу опубликовать новость",
       queued_date: (v) =>
         !v || v > new Date()
           ? null
           : "Опубликовать новость в прошлое невозможно",
-      image_url: (v) => (v ? null : "Прикрепите картинку"),
+      // image_url: (v) => (v ? null : "Прикрепите картинку"),
       passphrase: (v) => (v ? null : "Вы не указали пароль от ключа"),
     },
   });
@@ -90,15 +111,16 @@ export function PostEditForm({ post, groups }: Props) {
       source_url: post.post_url,
       image_url: post.image_url,
       image_file: undefined,
-      for_group: post.for_group?.id,
+      for_group: `${post.for_group?.id}`,
+      passphrase: usertoken && keys.keys[usertoken.id]?.passphrase,
+
       snippet: {
-        title: undefined,
-        description: undefined,
-        source_text: undefined,
-        logo: undefined,
+        source_text: postSource?.title,
+        title: post.title,
+        description: post.description,
       },
     });
-  }, [post]);
+  }, [post, postSource]);
 
   useEffect(() => {
     if (!form.values.image_file) return;
@@ -107,8 +129,6 @@ export function PostEditForm({ post, groups }: Props) {
       "image_url",
       URL.createObjectURL(form.values.image_file)
     );
-
-    console.log(form.values);
   }, [form.values.image_file]);
 
   useEffect(() => {
@@ -116,9 +136,12 @@ export function PostEditForm({ post, groups }: Props) {
 
     getGroupById(form.values.for_group)
       .then((res) => getKeyById(res.data.token_id))
-      .then((res) => setUsertoken(res.data))
+      .then((res) => {
+        setUsertoken(res.data);
+        form.setFieldValue("passphrase", keys.keys[res.data.id]?.passphrase);
+      })
       .catch((err) => console.log(err));
-  }, [form.values.for_group]);
+  }, [form.values.for_group, post]);
 
   function adaptGroup(group: IGroup): SelectItem {
     return {
@@ -128,15 +151,6 @@ export function PostEditForm({ post, groups }: Props) {
   }
 
   async function generateSnippet() {
-    console.log(form.values);
-
-    // Check if form has image URL or uploaded file
-    if (!form.values.image_url && !form.values.image_file) {
-      throw Error(
-        "У поста должна быть картинка. Если её нет изначально, то загрузите свою"
-      );
-    }
-
     // Trying to get the source logo
     let logo;
     try {
@@ -186,7 +200,13 @@ export function PostEditForm({ post, groups }: Props) {
   async function handleSubmit() {
     const validation = form.validate();
 
-    if (validation.hasErrors) return;
+    if (validation.hasErrors) {
+      if ("image_url" in validation.errors) {
+        setImageError(validation.errors.image_url?.toString());
+      }
+
+      return;
+    }
 
     setIsLoading(true);
 
@@ -207,8 +227,15 @@ export function PostEditForm({ post, groups }: Props) {
         )
       )
       .then((res) => {
-        successModalActions.open();
         setIsLoading(false);
+        successModalActions.open();
+
+        dispatch(
+          rememberKey({
+            ...usertoken!,
+            passphrase: form.values.passphrase,
+          })
+        );
       })
       .catch((err) => {
         notifications.show({
@@ -228,6 +255,7 @@ export function PostEditForm({ post, groups }: Props) {
               label={"Заголовок поста"}
               mb={"md"}
               {...form.getInputProps("title")}
+              withAsterisk
             />
             <Textarea
               label={"Текст поста"}
@@ -235,6 +263,7 @@ export function PostEditForm({ post, groups }: Props) {
               minRows={5}
               {...form.getInputProps("description")}
               autosize
+              withAsterisk
             />
             <TextInput
               label={"Ссылка в посте"}
@@ -242,6 +271,13 @@ export function PostEditForm({ post, groups }: Props) {
                 "Ссылка будет отображаться под описанием в тексте записи. Может не совпадать с источником"
               }
               {...form.getInputProps("source_text")}
+              rightSection={
+                <ActionIcon
+                  onClick={() => form.setFieldValue("source_text", "")}
+                >
+                  <IconX size={"1rem"} />
+                </ActionIcon>
+              }
               mb={"md"}
             />
             <TextInput
@@ -250,6 +286,13 @@ export function PostEditForm({ post, groups }: Props) {
                 "Укажите источник, который будет отображаться у записи в ВК (может отличаться от ссылки на новость, например, ссылка на сайт издания)"
               }
               {...form.getInputProps("source_url")}
+              rightSection={
+                <ActionIcon
+                  onClick={() => form.setFieldValue("source_url", "")}
+                >
+                  <IconX size={"1rem"} />
+                </ActionIcon>
+              }
               mb={"md"}
             />
             <Select
@@ -258,23 +301,27 @@ export function PostEditForm({ post, groups }: Props) {
               data={groups.map((group) => adaptGroup(group))}
               {...form.getInputProps("for_group")}
               mb={"md"}
+              withAsterisk
             />
             <InputPassword
               label={
                 usertoken ? (
                   <>
-                    Введите кодовую фразу для ключа <b>{usertoken.name}</b>
+                    Введите кодовую фразу для ключа <b>{usertoken.name}</b> (она
+                    будет сохранена)
                   </>
                 ) : (
                   "Введите кодовую фразу для ключа"
                 )
               }
+              icon={<IconDeviceFloppy size={"1rem"} />}
               placeholder={
                 form.values.for_group ? "Ваш пароль" : "Сначала выберите группу"
               }
               {...form.getInputProps("passphrase")}
               mb={"md"}
               disabled={form.values.for_group ? false : true}
+              withAsterisk
             />
             <Flex
               align={"stretch"}
@@ -345,6 +392,7 @@ export function PostEditForm({ post, groups }: Props) {
               clearable
               accept={"image/png,image/jpeg"}
               mb={"md"}
+              error={imageError}
             />
             <Accordion variant={"contained"} mb={"md"}>
               <Accordion.Item value={"imggen"}>
@@ -404,6 +452,8 @@ export function PostEditForm({ post, groups }: Props) {
         opened={isSuccessModalOpen}
         onClose={successModalActions.close}
         post={post}
+        handleCurrentPostDeletion={handleCurrentPostDeletion}
+        handleNextPost={handleNextPost}
         centered
       />
     </>
@@ -424,28 +474,47 @@ function ImagePreviewModal({ src, ...props }: ImagePreviewModalProps) {
 
 interface PublishSuccessProps extends ModalProps {
   post: IPost;
+  handleCurrentPostDeletion: () => void;
+  handleNextPost: () => void;
 }
 
-function PublishSuccessModal({ post, ...props }: PublishSuccessProps) {
-  const dispatch = useAppDispatch();
-
-  function handlePostQueueRemove() {
-    dispatch(removePost(post));
-    props.onClose();
-  }
-
+function PublishSuccessModal({
+  post,
+  handleCurrentPostDeletion,
+  handleNextPost,
+  ...props
+}: PublishSuccessProps) {
   return (
     <Modal {...props} title={"Запись успешно опубликована"}>
-      <Flex gap={"md"}>
+      <Flex gap={"xs"} wrap={"wrap"}>
         <Button
           color={"red"}
           style={{ flexGrow: 1 }}
-          onClick={handlePostQueueRemove}
+          leftIcon={<IconTrash size={"1rem"} />}
+          onClick={() => {
+            handleCurrentPostDeletion();
+            props.onClose();
+          }}
         >
-          Удалить пост из очереди
+          Удалить пост и перейти к следующему
         </Button>
-        <Button style={{ flexGrow: 1 }} onClick={props.onClose}>
-          Ничего не делать
+        <Button
+          color={"yellow"}
+          style={{ flexGrow: 1 }}
+          leftIcon={<IconArrowForwardUp size={"1rem"} />}
+          onClick={() => {
+            handleNextPost();
+            props.onClose();
+          }}
+        >
+          Не удалять и перейти к следующему
+        </Button>
+        <Button
+          style={{ flexGrow: 1 }}
+          leftIcon={<IconEdit size={"1rem"} />}
+          onClick={props.onClose}
+        >
+          Не удалять и остаться на текущем
         </Button>
       </Flex>
     </Modal>
