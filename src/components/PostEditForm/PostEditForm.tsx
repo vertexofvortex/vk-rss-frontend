@@ -20,13 +20,15 @@ import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import {
   IconAlertCircle,
+  IconArrowForwardUp,
   IconDeviceFloppy,
+  IconEdit,
+  IconTrash,
   IconUpload,
 } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { rememberKey } from "../../features/keys/keysSlice";
-import { removePost } from "../../features/postsCart/postsCartSlice";
 import { IGroup, IKey, ISource } from "../../models";
 import { IPost, IPostInCart } from "../../models/Post";
 import axiosInstance from "../../network/axios-instance";
@@ -38,8 +40,10 @@ import { InputPassword } from "../InputPassword/InputPassword";
 
 interface Props {
   post: IPostInCart;
-  postSource: ISource | undefined;
+  postSource: ISource;
   groups: IGroup[];
+  handleCurrentPostDeletion: () => void;
+  handleNextPost: () => void;
 }
 
 interface FormValues {
@@ -61,7 +65,13 @@ interface FormValues {
   };
 }
 
-export function PostEditForm({ post, postSource, groups }: Props) {
+export function PostEditForm({
+  post,
+  postSource,
+  groups,
+  handleCurrentPostDeletion,
+  handleNextPost,
+}: Props) {
   const [isImgModalOpen, imgModalActions] = useDisclosure();
   const [isSuccessModalOpen, successModalActions] = useDisclosure();
   const [image, setImage] = useState<string>();
@@ -101,12 +111,7 @@ export function PostEditForm({ post, postSource, groups }: Props) {
       image_file: undefined,
       for_group: `${post.for_group?.id}`,
       passphrase: usertoken && keys.keys[usertoken.id]?.passphrase,
-    });
-  }, [post]);
 
-  useEffect(() => {
-    form.setValues({
-      ...form.values,
       snippet: {
         source_text: postSource?.title,
         title: post.title,
@@ -438,6 +443,8 @@ export function PostEditForm({ post, postSource, groups }: Props) {
         opened={isSuccessModalOpen}
         onClose={successModalActions.close}
         post={post}
+        handleCurrentPostDeletion={handleCurrentPostDeletion}
+        handleNextPost={handleNextPost}
         centered
       />
     </>
@@ -458,28 +465,47 @@ function ImagePreviewModal({ src, ...props }: ImagePreviewModalProps) {
 
 interface PublishSuccessProps extends ModalProps {
   post: IPost;
+  handleCurrentPostDeletion: () => void;
+  handleNextPost: () => void;
 }
 
-function PublishSuccessModal({ post, ...props }: PublishSuccessProps) {
-  const dispatch = useAppDispatch();
-
-  function handlePostQueueRemove() {
-    dispatch(removePost(post));
-    props.onClose();
-  }
-
+function PublishSuccessModal({
+  post,
+  handleCurrentPostDeletion,
+  handleNextPost,
+  ...props
+}: PublishSuccessProps) {
   return (
     <Modal {...props} title={"Запись успешно опубликована"}>
-      <Flex gap={"md"}>
+      <Flex gap={"xs"} wrap={"wrap"}>
         <Button
           color={"red"}
           style={{ flexGrow: 1 }}
-          onClick={handlePostQueueRemove}
+          leftIcon={<IconTrash size={"1rem"} />}
+          onClick={() => {
+            handleCurrentPostDeletion();
+            props.onClose();
+          }}
         >
-          Удалить пост из очереди
+          Удалить пост и перейти к следующему
         </Button>
-        <Button style={{ flexGrow: 1 }} onClick={props.onClose}>
-          Ничего не делать
+        <Button
+          color={"yellow"}
+          style={{ flexGrow: 1 }}
+          leftIcon={<IconArrowForwardUp size={"1rem"} />}
+          onClick={() => {
+            handleNextPost();
+            props.onClose();
+          }}
+        >
+          Не удалять и перейти к следующему
+        </Button>
+        <Button
+          style={{ flexGrow: 1 }}
+          leftIcon={<IconEdit size={"1rem"} />}
+          onClick={props.onClose}
+        >
+          Не удалять и остаться на текущем
         </Button>
       </Flex>
     </Modal>
