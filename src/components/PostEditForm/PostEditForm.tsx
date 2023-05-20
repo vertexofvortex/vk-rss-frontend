@@ -27,7 +27,7 @@ import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { rememberKey } from "../../features/keys/keysSlice";
 import { removePost } from "../../features/postsCart/postsCartSlice";
-import { IGroup, IKey } from "../../models";
+import { IGroup, IKey, ISource } from "../../models";
 import { IPost, IPostInCart } from "../../models/Post";
 import axiosInstance from "../../network/axios-instance";
 import { getGroupById } from "../../network/groups";
@@ -38,6 +38,7 @@ import { InputPassword } from "../InputPassword/InputPassword";
 
 interface Props {
   post: IPostInCart;
+  postSource: ISource | undefined;
   groups: IGroup[];
 }
 
@@ -60,7 +61,7 @@ interface FormValues {
   };
 }
 
-export function PostEditForm({ post, groups }: Props) {
+export function PostEditForm({ post, postSource, groups }: Props) {
   const [isImgModalOpen, imgModalActions] = useDisclosure();
   const [isSuccessModalOpen, successModalActions] = useDisclosure();
   const [image, setImage] = useState<string>();
@@ -100,14 +101,19 @@ export function PostEditForm({ post, groups }: Props) {
       image_file: undefined,
       for_group: `${post.for_group?.id}`,
       passphrase: usertoken && keys.keys[usertoken.id]?.passphrase,
-      snippet: {
-        title: undefined,
-        description: undefined,
-        source_text: undefined,
-        logo: undefined,
-      },
     });
   }, [post]);
+
+  useEffect(() => {
+    form.setValues({
+      ...form.values,
+      snippet: {
+        source_text: postSource?.title,
+        title: post.title,
+        description: post.description,
+      },
+    });
+  }, [post, postSource]);
 
   useEffect(() => {
     if (!form.values.image_file) return;

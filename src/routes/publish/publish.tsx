@@ -8,13 +8,14 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import { AxiosResponse } from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLoaderData } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { PostEditForm } from "../../components";
 import { removePost } from "../../features/postsCart/postsCartSlice";
-import { IGroup } from "../../models";
+import { IGroup, ISource } from "../../models";
 import { IPost, IPostInCart } from "../../models/Post";
+import { getSourceByPostId } from "../../network/posts";
 
 export function Publish() {
   const postsCart = useAppSelector((state) => state.postsCart);
@@ -23,16 +24,7 @@ export function Publish() {
   const [currentPost, setCurrentPost] = useState<IPostInCart | null>(
     Object.values(postsCart.posts)[0]
   );
-  // const mobileWidth = useMediaQuery("(max-width: 851px)");
-
-  // function handlePostSelection(post: IPost) {
-  //   getSourceById(post.source_id)
-  //     .then(() => {
-  //       setCurrentPost(post);
-
-  //     })
-  //     .catch();
-  // }
+  const [postSource, setPostSource] = useState<ISource>();
 
   // FIXME: buggy, there is no switch to another post when 0st deleted
 
@@ -44,12 +36,24 @@ export function Publish() {
     dispatch(removePost(post));
   }
 
+  useEffect(() => {
+    if (!currentPost) return;
+
+    getSourceByPostId(currentPost?.id)
+      .then(({ data }) => setPostSource(data))
+      .catch((err) => console.log(err));
+  }, [currentPost]);
+
   return (
     <>
       {Object.keys(postsCart.posts).length > 0 ? (
         <>
           {currentPost ? (
-            <PostEditForm post={currentPost} groups={groups} />
+            <PostEditForm
+              post={currentPost}
+              postSource={postSource}
+              groups={groups}
+            />
           ) : (
             <Alert>Выберите пост</Alert>
           )}

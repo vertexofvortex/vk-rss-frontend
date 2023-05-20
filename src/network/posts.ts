@@ -1,4 +1,5 @@
 import { AxiosPromise } from "axios";
+import { ISource } from "../models";
 import { IPost } from "../models/Post";
 import axiosInstance from "./axios-instance";
 
@@ -22,4 +23,10 @@ export async function blockPost(post_id: number) {
 
 export async function unblockPost(post_id: number) {
   return axiosInstance.put(`/posts/${post_id}/unblock`);
+}
+
+export async function getSourceByPostId(
+  post_id: number
+): AxiosPromise<ISource> {
+  return axiosInstance.get(`/posts/source/${post_id}`);
 }
