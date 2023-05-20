@@ -76,10 +76,10 @@ export function PostEditForm({ post, postSource, groups }: Props) {
   const form = useForm<FormValues>({
     validate: {
       description: (v) => (v ? null : "У поста должен быть текст"),
-      source_url: (v) =>
-        /^(http|https):\/\/[^ "]+\.[^ "]+$/.test(v)
-          ? null
-          : "Ссылка должна быть действительной",
+      // source_url: (v) =>
+      //   /^(http|https):\/\/[^ "]+\.[^ "]+$/.test(v)
+      //     ? null
+      //     : "Ссылка должна быть действительной",
       for_group: (v) =>
         v ? null : "Укажите, в какую группу опубликовать новость",
       queued_date: (v) =>
@@ -255,6 +255,7 @@ export function PostEditForm({ post, postSource, groups }: Props) {
               label={"Заголовок поста"}
               mb={"md"}
               {...form.getInputProps("title")}
+              withAsterisk
             />
             <Textarea
               label={"Текст поста"}
@@ -262,6 +263,7 @@ export function PostEditForm({ post, postSource, groups }: Props) {
               minRows={5}
               {...form.getInputProps("description")}
               autosize
+              withAsterisk
             />
             <TextInput
               label={"Ссылка в посте"}
@@ -285,6 +287,7 @@ export function PostEditForm({ post, postSource, groups }: Props) {
               data={groups.map((group) => adaptGroup(group))}
               {...form.getInputProps("for_group")}
               mb={"md"}
+              withAsterisk
             />
             <InputPassword
               label={
@@ -304,6 +307,7 @@ export function PostEditForm({ post, postSource, groups }: Props) {
               {...form.getInputProps("passphrase")}
               mb={"md"}
               disabled={form.values.for_group ? false : true}
+              withAsterisk
             />
             <Flex
               align={"stretch"}
